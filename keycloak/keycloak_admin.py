@@ -703,64 +703,101 @@ def sync_user_attributes_from_usernames(admin: KeycloakAdmin, dry_run: bool = Fa
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description='Keycloak Client Management Tool',
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        description='Keycloak Admin Tool - Manage clients, users, and attributes',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # List resources
+  %(prog)s list clients
+  %(prog)s list users --filter test
+  %(prog)s list redirect-uris --filter localhost
+
+  # Show details
+  %(prog)s show client my-client-id
+
+  # Find resources
+  %(prog)s find clients --audience https://example.com
+  %(prog)s find redirect-uris --pattern localhost --new-uri https://prod.com --dry-run
+
+  # Update resources
+  %(prog)s update audience --client-ids client1,client2 --audience https://new.com
+  %(prog)s update redirect-uris --client-ids client1 --uris https://new.com/* --mode replace
+  %(prog)s update passwords --usernames user1,user2 --password NewPass123!
+
+  # Sync user attributes from usernames
+  %(prog)s sync user-attributes --dry-run
+"""
     )
 
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
 
-    # List command
-    subparsers.add_parser('list', help='List all clients')
+    # LIST command
+    list_parser = subparsers.add_parser('list', help='List resources')
+    list_subparsers = list_parser.add_subparsers(dest='resource', help='Resource to list')
 
-    # Show command
-    show_parser = subparsers.add_parser('show', help='Show client details')
-    show_parser.add_argument('client_id', help='Client ID to show')
+    list_subparsers.add_parser('clients', help='List all clients')
 
-    # Find command
-    find_parser = subparsers.add_parser('find', help='Find clients with audience mapper')
-    find_parser.add_argument('--audience', help='Filter by specific audience value')
+    list_users_parser = list_subparsers.add_parser('users', help='List all users')
+    list_users_parser.add_argument('--filter', help='Filter users by username (case-insensitive)')
 
-    # Update audience command
-    update_parser = subparsers.add_parser('update-audience', help='Update client audience')
-    update_parser.add_argument('--client-ids', required=True, help='Comma-separated client IDs')
-    update_parser.add_argument('--audience', required=True, help='New audience value')
+    list_redirect_uris_parser = list_subparsers.add_parser('redirect-uris', help='List clients with redirect URIs')
+    list_redirect_uris_parser.add_argument('--filter', help='Filter by URI containing text')
 
-    # Interactive command
-    subparsers.add_parser('interactive', help='Interactive mode to find and fix clients')
+    # SHOW command
+    show_parser = subparsers.add_parser('show', help='Show details of a resource')
+    show_subparsers = show_parser.add_subparsers(dest='resource', help='Resource to show')
 
-    # Redirect URI commands
-    list_redirects_parser = subparsers.add_parser('list-redirect-uris', help='List all clients with redirect URIs')
-    list_redirects_parser.add_argument('--filter', help='Filter by URI containing text')
+    show_client_parser = show_subparsers.add_parser('client', help='Show client details')
+    show_client_parser.add_argument('client_id', help='Client ID to show')
 
-    update_redirects_parser = subparsers.add_parser('update-redirect-uris',
-                                                     help='Update redirect URIs for specific clients')
-    update_redirects_parser.add_argument('--client-ids', required=True, help='Comma-separated client IDs')
-    update_redirects_parser.add_argument('--uris', required=True, help='Comma-separated redirect URIs')
-    update_redirects_parser.add_argument('--mode', choices=['replace', 'add', 'remove'], default='replace',
-                                         help='Update mode: replace (default), add, or remove')
+    # FIND command
+    find_parser = subparsers.add_parser('find', help='Find and optionally update resources')
+    find_subparsers = find_parser.add_subparsers(dest='resource', help='Resource to find')
 
-    find_replace_redirects_parser = subparsers.add_parser('find-replace-redirect-uris',
-                                                          help='Find and replace redirect URIs containing a pattern')
-    find_replace_redirects_parser.add_argument('--old-pattern', required=True,
-                                               help='Pattern to search for in redirect URIs')
-    find_replace_redirects_parser.add_argument('--new-uri', required=True,
-                                               help='New URI to replace matching URIs with')
-    find_replace_redirects_parser.add_argument('--dry-run', action='store_true',
-                                               help='Show what would be changed without making changes')
+    find_clients_parser = find_subparsers.add_parser('clients', help='Find clients with audience mapper')
+    find_clients_parser.add_argument('--audience', help='Filter by specific audience value')
 
-    # User commands
-    user_list_parser = subparsers.add_parser('list-users', help='List all users')
-    user_list_parser.add_argument('--filter', help='Filter users by username (case-insensitive)')
+    find_redirect_uris_parser = find_subparsers.add_parser('redirect-uris',
+                                                            help='Find and replace redirect URIs containing a pattern')
+    find_redirect_uris_parser.add_argument('--pattern', required=True,
+                                           help='Pattern to search for in redirect URIs')
+    find_redirect_uris_parser.add_argument('--new-uri', required=True,
+                                           help='New URI to replace matching URIs with')
+    find_redirect_uris_parser.add_argument('--dry-run', action='store_true',
+                                           help='Show what would be changed without making changes')
 
-    reset_pw_parser = subparsers.add_parser('reset-passwords', help='Reset passwords for multiple users')
-    reset_pw_parser.add_argument('--usernames', required=True, help='Comma-separated usernames')
-    reset_pw_parser.add_argument('--password', required=True, help='New password to set')
-    reset_pw_parser.add_argument('--permanent', action='store_true', help='Set as permanent password (default: temporary)')
+    # UPDATE command
+    update_parser = subparsers.add_parser('update', help='Update resources')
+    update_subparsers = update_parser.add_subparsers(dest='resource', help='Resource to update')
 
-    sync_attrs_parser = subparsers.add_parser('sync-user-attributes',
-                                              help='Parse usernames and set attributes (classification, nationality, needToKnow)')
-    sync_attrs_parser.add_argument('--dry-run', action='store_true',
-                                   help='Show what would be done without making changes')
+    update_audience_parser = update_subparsers.add_parser('audience', help='Update client audience configuration')
+    update_audience_parser.add_argument('--client-ids', required=True, help='Comma-separated client IDs')
+    update_audience_parser.add_argument('--audience', required=True, help='New audience value')
+
+    update_redirect_uris_parser = update_subparsers.add_parser('redirect-uris',
+                                                                help='Update redirect URIs for clients')
+    update_redirect_uris_parser.add_argument('--client-ids', required=True, help='Comma-separated client IDs')
+    update_redirect_uris_parser.add_argument('--uris', required=True, help='Comma-separated redirect URIs')
+    update_redirect_uris_parser.add_argument('--mode', choices=['replace', 'add', 'remove'], default='replace',
+                                             help='Update mode: replace (default), add, or remove')
+
+    update_passwords_parser = update_subparsers.add_parser('passwords', help='Update user passwords')
+    update_passwords_parser.add_argument('--usernames', required=True, help='Comma-separated usernames')
+    update_passwords_parser.add_argument('--password', required=True, help='New password to set')
+    update_passwords_parser.add_argument('--permanent', action='store_true',
+                                         help='Set as permanent password (default: temporary)')
+
+    # SYNC command
+    sync_parser = subparsers.add_parser('sync', help='Sync resources')
+    sync_subparsers = sync_parser.add_subparsers(dest='resource', help='Resource to sync')
+
+    sync_user_attrs_parser = sync_subparsers.add_parser('user-attributes',
+                                                         help='Parse usernames and set attributes (classification, nationality, needToKnow)')
+    sync_user_attrs_parser.add_argument('--dry-run', action='store_true',
+                                        help='Show what would be done without making changes')
+
+    # INTERACTIVE command (standalone for backwards compatibility)
+    subparsers.add_parser('interactive', help='Interactive mode to find and fix client issues')
 
     args = parser.parse_args()
 
@@ -768,80 +805,86 @@ def main():
         parser.print_help()
         sys.exit(1)
 
+    # Check for subcommand
+    if args.command in ['list', 'show', 'find', 'update', 'sync']:
+        if not hasattr(args, 'resource') or not args.resource:
+            parser.parse_args([args.command, '--help'])
+            sys.exit(1)
+
     # Load config and create admin client
     config = load_config()
     admin = get_keycloak_admin(config)
 
-    # Execute command
+    # Execute commands
     if args.command == 'list':
-        list_clients(admin)
+        if args.resource == 'clients':
+            list_clients(admin)
+        elif args.resource == 'users':
+            list_users(admin, args.filter)
+        elif args.resource == 'redirect-uris':
+            list_clients_with_redirect_uris(admin, args.filter)
 
     elif args.command == 'show':
-        show_client(admin, args.client_id)
+        if args.resource == 'client':
+            show_client(admin, args.client_id)
 
     elif args.command == 'find':
-        clients = find_clients_with_audience(admin, args.audience)
-        print(f"\nFound {len(clients)} clients:\n")
-        print(f"{'Client ID':<40} {'Type':<10} {'Audience'}")
-        print("-" * 80)
-        for client in clients:
-            aud_type = client.get('audience_type', 'unknown')
-            marker = "✓" if aud_type == "custom" else "✗"
-            print(f"{client['clientId']:<40} {marker} {aud_type:<8} {client['audience']}")
+        if args.resource == 'clients':
+            clients = find_clients_with_audience(admin, args.audience)
+            print(f"\nFound {len(clients)} clients:\n")
+            print(f"{'Client ID':<40} {'Type':<10} {'Audience'}")
+            print("-" * 80)
+            for client in clients:
+                aud_type = client.get('audience_type', 'unknown')
+                marker = "✓" if aud_type == "custom" else "✗"
+                print(f"{client['clientId']:<40} {marker} {aud_type:<8} {client['audience']}")
+        elif args.resource == 'redirect-uris':
+            if args.dry_run:
+                print("\n⚠ DRY RUN MODE - No changes will be made\n")
+            find_and_replace_redirect_uri(admin, args.pattern, args.new_uri, dry_run=args.dry_run)
 
-    elif args.command == 'update-audience':
-        client_ids = [c.strip() for c in args.client_ids.split(',')]
-        for client_id in client_ids:
-            update_client_audience(admin, client_id, args.audience)
+    elif args.command == 'update':
+        if args.resource == 'audience':
+            client_ids = [c.strip() for c in args.client_ids.split(',')]
+            for client_id in client_ids:
+                update_client_audience(admin, client_id, args.audience)
+        elif args.resource == 'redirect-uris':
+            client_ids = [c.strip() for c in args.client_ids.split(',')]
+            redirect_uris = [u.strip() for u in args.uris.split(',')]
+
+            print(f"\n⚠️  WARNING: About to update redirect URIs for {len(client_ids)} clients")
+            print(f"Mode: {args.mode}")
+            print(f"URIs: {redirect_uris}")
+
+            confirm = input("\nType 'yes' to confirm: ").strip().lower()
+            if confirm == 'yes':
+                batch_update_redirect_uris(admin, client_ids, redirect_uris, args.mode)
+            else:
+                print("Cancelled.")
+        elif args.resource == 'passwords':
+            usernames = [u.strip() for u in args.usernames.split(',')]
+            temporary = not args.permanent
+
+            print(f"\n⚠️  WARNING: About to reset passwords for {len(usernames)} users")
+            if temporary:
+                print("Passwords will be TEMPORARY (users must change on first login)")
+            else:
+                print("Passwords will be PERMANENT")
+
+            confirm = input("\nType 'yes' to confirm: ").strip().lower()
+            if confirm == 'yes':
+                reset_user_passwords(admin, usernames, args.password, temporary=temporary)
+            else:
+                print("Cancelled.")
+
+    elif args.command == 'sync':
+        if args.resource == 'user-attributes':
+            if args.dry_run:
+                print("\n⚠ DRY RUN MODE - No changes will be made\n")
+            sync_user_attributes_from_usernames(admin, dry_run=args.dry_run)
 
     elif args.command == 'interactive':
         interactive_mode(admin)
-
-    elif args.command == 'list-redirect-uris':
-        list_clients_with_redirect_uris(admin, args.filter)
-
-    elif args.command == 'update-redirect-uris':
-        client_ids = [c.strip() for c in args.client_ids.split(',')]
-        redirect_uris = [u.strip() for u in args.uris.split(',')]
-
-        print(f"\n⚠️  WARNING: About to update redirect URIs for {len(client_ids)} clients")
-        print(f"Mode: {args.mode}")
-        print(f"URIs: {redirect_uris}")
-
-        confirm = input("\nType 'yes' to confirm: ").strip().lower()
-        if confirm == 'yes':
-            batch_update_redirect_uris(admin, client_ids, redirect_uris, args.mode)
-        else:
-            print("Cancelled.")
-
-    elif args.command == 'find-replace-redirect-uris':
-        if args.dry_run:
-            print("\n⚠ DRY RUN MODE - No changes will be made\n")
-        find_and_replace_redirect_uri(admin, args.old_pattern, args.new_uri, dry_run=args.dry_run)
-
-    elif args.command == 'list-users':
-        list_users(admin, args.filter)
-
-    elif args.command == 'reset-passwords':
-        usernames = [u.strip() for u in args.usernames.split(',')]
-        temporary = not args.permanent
-
-        print(f"\n⚠️  WARNING: About to reset passwords for {len(usernames)} users")
-        if temporary:
-            print("Passwords will be TEMPORARY (users must change on first login)")
-        else:
-            print("Passwords will be PERMANENT")
-
-        confirm = input("\nType 'yes' to confirm: ").strip().lower()
-        if confirm == 'yes':
-            reset_user_passwords(admin, usernames, args.password, temporary=temporary)
-        else:
-            print("Cancelled.")
-
-    elif args.command == 'sync-user-attributes':
-        if args.dry_run:
-            print("\n⚠ DRY RUN MODE - No changes will be made\n")
-        sync_user_attributes_from_usernames(admin, dry_run=args.dry_run)
 
 
 if __name__ == '__main__':

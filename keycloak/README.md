@@ -2,6 +2,8 @@
 
 Comprehensive Python tool for managing Keycloak realms, clients, users, and attributes.
 
+Follows OpenCLI/kubectl command patterns for intuitive hierarchical commands.
+
 ## Setup
 
 1. Create a virtual environment:
@@ -25,96 +27,113 @@ KEYCLOAK_PASSWORD=your-password
 
 **Note:** The `.env` file is gitignored for security.
 
-## keycloak_admin.py
+## Command Structure
 
-All-in-one tool for Keycloak administration tasks.
+The CLI follows kubectl-style hierarchical commands:
+```
+keycloak_admin.py <verb> <resource> [options]
+```
 
-### Client Management
+**Verbs:** `list`, `show`, `find`, `update`, `sync`
+**Resources:** `clients`, `users`, `redirect-uris`, `audience`, `passwords`, `user-attributes`
+
+## Commands
+
+### List Resources
 
 ```bash
 # List all clients
-python keycloak_admin.py list
+python keycloak_admin.py list clients
 
-# Show client details
-python keycloak_admin.py show <client-id>
+# List all users
+python keycloak_admin.py list users
 
-# Find clients with audience mappers
-python keycloak_admin.py find
-python keycloak_admin.py find --audience "https://ohalo.platform.partner.dsp-prod-green.virtru.com"
+# List users with filter
+python keycloak_admin.py list users --filter "test"
 
-# Update audience for specific clients (comma-separated)
-python keycloak_admin.py update-audience \
-  --client-ids client1,client2,client3 \
-  --audience "https://ohalo.platform.partner.dsp-prod-green.virtru.com"
-
-# Interactive mode - find and fix clients with wrong audience
-python keycloak_admin.py interactive
-```
-
-### Redirect URI Management
-
-```bash
 # List all clients with their redirect URIs
-python keycloak_admin.py list-redirect-uris
+python keycloak_admin.py list redirect-uris
 
 # List clients with redirect URIs containing a pattern
-python keycloak_admin.py list-redirect-uris --filter "localhost"
+python keycloak_admin.py list redirect-uris --filter "localhost"
+```
 
-# Update redirect URIs for specific clients
-# Mode: replace (default), add, or remove
-python keycloak_admin.py update-redirect-uris \
+### Show Details
+
+```bash
+# Show client details
+python keycloak_admin.py show client <client-id>
+```
+
+### Find Resources
+
+```bash
+# Find clients with audience mappers
+python keycloak_admin.py find clients
+
+# Find clients with specific audience
+python keycloak_admin.py find clients --audience "https://ohalo.platform.partner.dsp-prod-green.virtru.com"
+
+# Find and replace redirect URIs (dry run)
+python keycloak_admin.py find redirect-uris \
+  --pattern "http://localhost:8080" \
+  --new-uri "https://production.example.com" \
+  --dry-run
+
+# Execute the replacement
+python keycloak_admin.py find redirect-uris \
+  --pattern "http://localhost:8080" \
+  --new-uri "https://production.example.com"
+```
+
+### Update Resources
+
+**Update Client Audience:**
+```bash
+# Update audience for specific clients (comma-separated)
+python keycloak_admin.py update audience \
   --client-ids client1,client2,client3 \
+  --audience "https://ohalo.platform.partner.dsp-prod-green.virtru.com"
+```
+
+**Update Redirect URIs:**
+```bash
+# Replace redirect URIs (default mode)
+python keycloak_admin.py update redirect-uris \
+  --client-ids "dsp-web-admin,dsp-secure-viewer-web" \
   --uris "https://new.example.com/*,https://new.example.com:8080/*" \
   --mode replace
 
 # Add redirect URIs (append to existing)
-python keycloak_admin.py update-redirect-uris \
-  --client-ids client1,client2 \
+python keycloak_admin.py update redirect-uris \
+  --client-ids "client1,client2" \
   --uris "https://additional.example.com/*" \
   --mode add
 
 # Remove specific redirect URIs
-python keycloak_admin.py update-redirect-uris \
-  --client-ids client1,client2 \
+python keycloak_admin.py update redirect-uris \
+  --client-ids "client1,client2" \
   --uris "https://old.example.com/*" \
   --mode remove
-
-# Find and replace redirect URIs containing a pattern
-# This searches all clients and replaces matching URIs
-python keycloak_admin.py find-replace-redirect-uris \
-  --old-pattern "http://localhost:8080" \
-  --new-uri "https://production.example.com" \
-  --dry-run
-
-# Execute the replacement (without --dry-run)
-python keycloak_admin.py find-replace-redirect-uris \
-  --old-pattern "http://localhost:8080" \
-  --new-uri "https://production.example.com"
 ```
 
-### User Management
-
+**Update User Passwords:**
 ```bash
-# List all users
-python keycloak_admin.py list-users
-
-# List users with filter
-python keycloak_admin.py list-users --filter "test"
-
-# Reset passwords for multiple users (comma-separated)
-# By default, passwords are temporary (users must change on first login)
-python keycloak_admin.py reset-passwords \
+# Reset passwords (temporary by default)
+python keycloak_admin.py update passwords \
   --usernames user1,user2,user3 \
   --password "NewPassword123!"
 
 # Set permanent passwords
-python keycloak_admin.py reset-passwords \
+python keycloak_admin.py update passwords \
   --usernames user1,user2 \
   --password "NewPassword123!" \
   --permanent
 ```
 
-### User Attribute Sync
+### Sync Resources
+
+**Sync User Attributes from Usernames:**
 
 Parse usernames and automatically set attributes based on naming patterns.
 
@@ -126,19 +145,79 @@ Parse usernames and automatically set attributes based on naming patterns.
 - `classified-fra-int` → Classification: Classified, Nationality: FRA, Need To Know: INT
 
 ```bash
-# Dry run - see what would be done without making changes
-python keycloak_admin.py sync-user-attributes --dry-run
+# Dry run - see what would be done
+python keycloak_admin.py sync user-attributes --dry-run
 
 # Execute - creates user profile attributes and sets user attributes
-python keycloak_admin.py sync-user-attributes
+python keycloak_admin.py sync user-attributes
 ```
 
-**What this command does:**
+**What this does:**
 1. Creates user profile attributes (`classification`, `nationality`, `needToKnow`) in Realm Settings if they don't exist
 2. Scans all users in the realm
 3. Parses usernames matching the pattern
 4. Sets the appropriate attributes for each matching user
 5. Attributes then appear in the User Details tab (not just the Attributes tab)
+
+### Interactive Mode
+
+```bash
+# Interactive mode - find and fix client issues
+python keycloak_admin.py interactive
+```
+
+## Common Workflows
+
+### Migrate from Localhost to Production
+
+1. **Find what needs updating:**
+   ```bash
+   python keycloak_admin.py list redirect-uris --filter "localhost"
+   ```
+
+2. **Test the replacement:**
+   ```bash
+   python keycloak_admin.py find redirect-uris \
+     --pattern "localhost:8080" \
+     --new-uri "https://production.virtru.com" \
+     --dry-run
+   ```
+
+3. **Execute:**
+   ```bash
+   python keycloak_admin.py find redirect-uris \
+     --pattern "localhost:8080" \
+     --new-uri "https://production.virtru.com"
+   ```
+
+### Fix Client Audience Configuration
+
+1. **Find misconfigured clients:**
+   ```bash
+   python keycloak_admin.py find clients
+   ```
+
+2. **Update specific clients:**
+   ```bash
+   python keycloak_admin.py update audience \
+     --client-ids "client1,client2" \
+     --audience "https://correct.audience.com"
+   ```
+
+### Bulk User Setup
+
+1. **Sync attributes from usernames:**
+   ```bash
+   python keycloak_admin.py sync user-attributes --dry-run
+   python keycloak_admin.py sync user-attributes
+   ```
+
+2. **Reset passwords:**
+   ```bash
+   python keycloak_admin.py update passwords \
+     --usernames "user1,user2,user3" \
+     --password "TempPass123!"
+   ```
 
 ## Features
 
@@ -150,6 +229,7 @@ python keycloak_admin.py sync-user-attributes
 - ✓ Interactive mode for discovering issues
 - ✓ Dry-run mode for safe testing
 - ✓ Comprehensive error handling and reporting
+- ✓ kubectl-style hierarchical commands
 
 ## Keycloak Instance
 
