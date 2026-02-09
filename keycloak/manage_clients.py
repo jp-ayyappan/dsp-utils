@@ -252,6 +252,63 @@ def interactive_mode(admin: KeycloakAdmin):
         print("Exiting.")
 
 
+def list_users(admin: KeycloakAdmin, username_filter: Optional[str] = None):
+    """List all users in the realm."""
+    try:
+        users = admin.get_users({})
+
+        # Filter by username if provided
+        if username_filter:
+            users = [u for u in users if username_filter.lower() in u.get('username', '').lower()]
+
+        print(f"\nFound {len(users)} users:\n")
+        print(f"{'Username':<30} {'Email':<40} {'ID'}")
+        print("-" * 100)
+        for user in users:
+            username = user.get('username', 'N/A')
+            email = user.get('email', '')
+            user_id = user.get('id', '')
+            print(f"{username:<30} {email:<40} {user_id}")
+    except Exception as e:
+        print(f"Error listing users: {e}")
+
+
+def reset_user_passwords(admin: KeycloakAdmin, usernames: List[str], new_password: str, temporary: bool = True):
+    """Reset passwords for multiple users."""
+    try:
+        # Get all users
+        all_users = admin.get_users({})
+
+        # Create username to user_id mapping
+        user_map = {u.get('username'): u.get('id') for u in all_users}
+
+        success_count = 0
+        failed_count = 0
+
+        for username in usernames:
+            if username not in user_map:
+                print(f"✗ User '{username}' not found")
+                failed_count += 1
+                continue
+
+            try:
+                user_id = user_map[username]
+                admin.set_user_password(user_id, new_password, temporary=temporary)
+                temp_str = " (temporary)" if temporary else ""
+                print(f"✓ Password reset for '{username}'{temp_str}")
+                success_count += 1
+            except Exception as e:
+                print(f"✗ Error resetting password for '{username}': {e}")
+                failed_count += 1
+
+        print(f"\nSummary: {success_count} succeeded, {failed_count} failed")
+        return success_count, failed_count
+
+    except Exception as e:
+        print(f"Error resetting passwords: {e}")
+        return 0, len(usernames)
+
+
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
@@ -279,6 +336,15 @@ def main():
 
     # Interactive command
     subparsers.add_parser('interactive', help='Interactive mode to find and fix clients')
+
+    # User commands
+    user_list_parser = subparsers.add_parser('list-users', help='List all users')
+    user_list_parser.add_argument('--filter', help='Filter users by username (case-insensitive)')
+
+    reset_pw_parser = subparsers.add_parser('reset-passwords', help='Reset passwords for multiple users')
+    reset_pw_parser.add_argument('--usernames', required=True, help='Comma-separated usernames')
+    reset_pw_parser.add_argument('--password', required=True, help='New password to set')
+    reset_pw_parser.add_argument('--permanent', action='store_true', help='Set as permanent password (default: temporary)')
 
     args = parser.parse_args()
 
@@ -314,6 +380,25 @@ def main():
 
     elif args.command == 'interactive':
         interactive_mode(admin)
+
+    elif args.command == 'list-users':
+        list_users(admin, args.filter)
+
+    elif args.command == 'reset-passwords':
+        usernames = [u.strip() for u in args.usernames.split(',')]
+        temporary = not args.permanent
+
+        print(f"\n⚠️  WARNING: About to reset passwords for {len(usernames)} users")
+        if temporary:
+            print("Passwords will be TEMPORARY (users must change on first login)")
+        else:
+            print("Passwords will be PERMANENT")
+
+        confirm = input("\nType 'yes' to confirm: ").strip().lower()
+        if confirm == 'yes':
+            reset_user_passwords(admin, usernames, args.password, temporary=temporary)
+        else:
+            print("Cancelled.")
 
 
 if __name__ == '__main__':

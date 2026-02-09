@@ -29,9 +29,9 @@ KEYCLOAK_PASSWORD=your-password
 
 ### manage_clients.py
 
-Tool for bulk updating client configurations, particularly for fixing audience settings.
+Tool for bulk updating client configurations and managing users.
 
-**Usage:**
+**Client Management:**
 ```bash
 # List all clients
 python manage_clients.py list
@@ -39,11 +39,38 @@ python manage_clients.py list
 # Show client details
 python manage_clients.py show <client-id>
 
-# Update audience for specific clients
-python manage_clients.py update-audience --client-ids client1,client2 --audience your-audience
+# Find clients with audience mappers
+python manage_clients.py find
+python manage_clients.py find --audience "https://ohalo.platform.partner.dsp-prod-green.virtru.com"
+
+# Update audience for specific clients (comma-separated)
+python manage_clients.py update-audience \
+  --client-ids client1,client2,client3 \
+  --audience "https://ohalo.platform.partner.dsp-prod-green.virtru.com"
 
 # Interactive mode - find and fix clients with wrong audience
 python manage_clients.py interactive
+```
+
+**User Management:**
+```bash
+# List all users
+python manage_clients.py list-users
+
+# List users with filter
+python manage_clients.py list-users --filter "test"
+
+# Reset passwords for multiple users (comma-separated)
+# By default, passwords are temporary (users must change on first login)
+python manage_clients.py reset-passwords \
+  --usernames user1,user2,user3 \
+  --password "NewPassword123!"
+
+# Set permanent passwords
+python manage_clients.py reset-passwords \
+  --usernames user1,user2 \
+  --password "NewPassword123!" \
+  --permanent
 ```
 
 ## Keycloak Instance
