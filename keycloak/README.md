@@ -73,6 +73,30 @@ python manage_clients.py reset-passwords \
   --permanent
 ```
 
+**User Attribute Sync:**
+```bash
+# Parse usernames and automatically set attributes based on naming pattern
+# Pattern: {classification}-{nationality}-{needToKnow}
+# Examples:
+#   secret-usa-aaa     → Classification: Secret, Nationality: USA, Need To Know: AAA
+#   top-secret-gbr-bbb → Classification: Top Secret, Nationality: GBR, Need To Know: BBB
+#   classified-fra-int → Classification: Classified, Nationality: FRA, Need To Know: INT
+
+# Dry run - see what would be done without making changes
+python manage_clients.py sync-user-attributes --dry-run
+
+# Execute - creates user profile attributes and sets user attributes
+python manage_clients.py sync-user-attributes
+```
+
+This command will:
+1. Create user profile attributes (`classification`, `nationality`, `needToKnow`) in Realm Settings if they don't exist
+2. Scan all users in the realm
+3. Parse usernames matching the pattern `{classification}-{nationality}-{needToKnow}`
+4. Set the appropriate attributes for each matching user
+5. Attributes will then appear in the User Details tab (not just the Attributes tab)
+```
+
 ## Keycloak Instance
 
 - **URL:** https://keycloak-ohalo.dsp-prod-green.virtru.com/admin/dsp-ohalo/console/

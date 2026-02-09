@@ -309,6 +309,217 @@ def reset_user_passwords(admin: KeycloakAdmin, usernames: List[str], new_passwor
         return 0, len(usernames)
 
 
+def get_user_profile_config(admin: KeycloakAdmin):
+    """Get the user profile configuration."""
+    try:
+        # User profile is accessed via the admin REST API
+        realm = admin.connection.realm_name
+        url = f"{admin.connection.server_url}/admin/realms/{realm}/users/profile"
+        response = admin.connection.raw_get(url)
+        return response.json() if hasattr(response, 'json') else response
+    except Exception as e:
+        print(f"Error getting user profile: {e}")
+        return None
+
+
+def create_user_profile_attribute(admin: KeycloakAdmin, attribute_name: str, display_name: str,
+                                   multivalued: bool = False, required: bool = False):
+    """Create or update a user profile attribute."""
+    try:
+        realm = admin.connection.realm_name
+        profile_url = f"{admin.connection.server_url}/admin/realms/{realm}/users/profile"
+
+        # Get current profile
+        profile = get_user_profile_config(admin)
+        if not profile:
+            print(f"Could not retrieve user profile configuration")
+            return False
+
+        # Check if attribute already exists
+        attributes = profile.get('attributes', [])
+        existing_attr = next((attr for attr in attributes if attr.get('name') == attribute_name), None)
+
+        if existing_attr:
+            print(f"  Attribute '{attribute_name}' already exists")
+            return True
+
+        # Create new attribute
+        new_attribute = {
+            "name": attribute_name,
+            "displayName": display_name,
+            "validations": {},
+            "permissions": {
+                "view": ["admin", "user"],
+                "edit": ["admin"]
+            },
+            "multivalued": multivalued,
+            "required": {
+                "roles": [],
+                "scopes": []
+            } if not required else {
+                "roles": ["user"],
+                "scopes": []
+            }
+        }
+
+        # Add to attributes list
+        attributes.append(new_attribute)
+        profile['attributes'] = attributes
+
+        # Update profile
+        admin.connection.raw_put(profile_url, data=json.dumps(profile))
+        print(f"✓ Created user profile attribute '{attribute_name}'")
+        return True
+
+    except Exception as e:
+        print(f"✗ Error creating attribute '{attribute_name}': {e}")
+        return False
+
+
+def parse_username_attributes(username: str) -> Optional[Dict[str, str]]:
+    """
+    Parse username pattern: {classification}-{nationality}-{needToKnow}
+
+    Examples:
+        secret-usa-aaa -> classification: Secret, nationality: USA, needToKnow: AAA
+        top-secret-gbr-bbb -> classification: Top Secret, nationality: GBR, needToKnow: BBB
+        classified-fra-int -> classification: Classified, nationality: FRA, needToKnow: INT
+    """
+    import re
+
+    # Pattern: one or more words (with hyphens) - country code - need to know code
+    pattern = r'^([\w-]+)-([A-Z]{2,3})-([A-Z]{2,})$'
+    match = re.match(pattern, username, re.IGNORECASE)
+
+    if not match:
+        return None
+
+    classification_raw = match.group(1)
+    nationality = match.group(2).upper()
+    need_to_know = match.group(3).upper()
+
+    # Convert classification to proper case
+    classification_map = {
+        'secret': 'Secret',
+        'top-secret': 'Top Secret',
+        'classified': 'Classified',
+        'unclassified': 'Unclassified',
+        'confidential': 'Confidential'
+    }
+
+    classification = classification_map.get(classification_raw.lower(),
+                                           classification_raw.replace('-', ' ').title())
+
+    return {
+        'classification': classification,
+        'nationality': nationality,
+        'needToKnow': need_to_know
+    }
+
+
+def set_user_attributes_from_username(admin: KeycloakAdmin, user_id: str, username: str,
+                                      attributes: Dict[str, str], dry_run: bool = False):
+    """Set user attributes based on parsed username."""
+    try:
+        if dry_run:
+            print(f"  Would set attributes for '{username}':")
+            for key, value in attributes.items():
+                print(f"    {key}: {value}")
+            return True
+
+        # Get current user
+        user = admin.get_user(user_id)
+        current_attributes = user.get('attributes', {})
+
+        # Update attributes (preserve existing ones)
+        for key, value in attributes.items():
+            current_attributes[key] = [value] if not isinstance(value, list) else value
+
+        # Update user
+        admin.update_user(user_id, {'attributes': current_attributes})
+        print(f"✓ Updated attributes for '{username}'")
+        return True
+
+    except Exception as e:
+        print(f"✗ Error updating user '{username}': {e}")
+        return False
+
+
+def sync_user_attributes_from_usernames(admin: KeycloakAdmin, dry_run: bool = False):
+    """
+    Sync user attributes based on username patterns.
+
+    1. Creates user profile attributes (classification, nationality, needToKnow) if they don't exist
+    2. Scans all users and parses usernames matching the pattern
+    3. Sets attributes for matching users
+    """
+    print("\n=== User Attribute Sync from Usernames ===\n")
+
+    # Step 1: Ensure user profile attributes exist
+    print("Step 1: Ensuring user profile attributes exist...")
+
+    attributes_to_create = [
+        ('classification', 'Classification', False, False),
+        ('nationality', 'Nationality', False, False),
+        ('needToKnow', 'Need To Know', False, False)
+    ]
+
+    for attr_name, display_name, multivalued, required in attributes_to_create:
+        if not dry_run:
+            create_user_profile_attribute(admin, attr_name, display_name, multivalued, required)
+        else:
+            print(f"  Would ensure attribute '{attr_name}' exists")
+
+    print()
+
+    # Step 2: Get all users
+    print("Step 2: Scanning users...")
+    users = admin.get_users({})
+    print(f"Found {len(users)} users\n")
+
+    # Step 3: Parse and update
+    print("Step 3: Parsing usernames and setting attributes...")
+    print()
+
+    matched_count = 0
+    updated_count = 0
+    skipped_count = 0
+
+    for user in users:
+        username = user.get('username', '')
+        user_id = user.get('id', '')
+
+        # Parse username
+        parsed = parse_username_attributes(username)
+
+        if parsed:
+            matched_count += 1
+            print(f"✓ Matched: {username}")
+            print(f"  → Classification: {parsed['classification']}")
+            print(f"  → Nationality: {parsed['nationality']}")
+            print(f"  → Need To Know: {parsed['needToKnow']}")
+
+            if set_user_attributes_from_username(admin, user_id, username, parsed, dry_run):
+                updated_count += 1
+            print()
+        else:
+            skipped_count += 1
+            if dry_run:
+                print(f"  Skipped: {username} (doesn't match pattern)")
+
+    # Summary
+    print("\n" + "=" * 60)
+    print("Summary:")
+    print(f"  Total users: {len(users)}")
+    print(f"  Matched pattern: {matched_count}")
+    print(f"  Updated: {updated_count}")
+    print(f"  Skipped: {skipped_count}")
+
+    if dry_run:
+        print("\n⚠ This was a DRY RUN - no changes were made")
+        print("Run without --dry-run to apply changes")
+
+
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
@@ -345,6 +556,11 @@ def main():
     reset_pw_parser.add_argument('--usernames', required=True, help='Comma-separated usernames')
     reset_pw_parser.add_argument('--password', required=True, help='New password to set')
     reset_pw_parser.add_argument('--permanent', action='store_true', help='Set as permanent password (default: temporary)')
+
+    sync_attrs_parser = subparsers.add_parser('sync-user-attributes',
+                                              help='Parse usernames and set attributes (classification, nationality, needToKnow)')
+    sync_attrs_parser.add_argument('--dry-run', action='store_true',
+                                   help='Show what would be done without making changes')
 
     args = parser.parse_args()
 
@@ -399,6 +615,11 @@ def main():
             reset_user_passwords(admin, usernames, args.password, temporary=temporary)
         else:
             print("Cancelled.")
+
+    elif args.command == 'sync-user-attributes':
+        if args.dry_run:
+            print("\n⚠ DRY RUN MODE - No changes will be made\n")
+        sync_user_attributes_from_usernames(admin, dry_run=args.dry_run)
 
 
 if __name__ == '__main__':
