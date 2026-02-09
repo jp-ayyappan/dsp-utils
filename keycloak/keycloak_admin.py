@@ -139,6 +139,186 @@ def find_clients_with_audience(admin: KeycloakAdmin, audience: Optional[str] = N
         return []
 
 
+def list_clients_with_redirect_uris(admin: KeycloakAdmin, uri_filter: Optional[str] = None):
+    """List all clients with their redirect URIs."""
+    try:
+        clients = admin.get_clients()
+
+        print(f"\nFound {len(clients)} clients:\n")
+        print(f"{'Client ID':<40} {'Redirect URIs'}")
+        print("-" * 120)
+
+        matching_count = 0
+        for client in clients:
+            client_id = client.get('clientId', 'N/A')
+            redirect_uris = client.get('redirectUris', [])
+
+            # Filter if specified
+            if uri_filter:
+                if not any(uri_filter in uri for uri in redirect_uris):
+                    continue
+
+            matching_count += 1
+            if redirect_uris:
+                print(f"{client_id:<40} {redirect_uris[0]}")
+                for uri in redirect_uris[1:]:
+                    print(f"{'':<40} {uri}")
+            else:
+                print(f"{client_id:<40} (no redirect URIs)")
+
+        if uri_filter:
+            print(f"\n{matching_count} clients matched filter '{uri_filter}'")
+
+        return clients
+    except Exception as e:
+        print(f"Error listing clients: {e}")
+        return []
+
+
+def update_client_redirect_uris(admin: KeycloakAdmin, client_id: str, redirect_uris: List[str],
+                                 mode: str = "replace"):
+    """
+    Update redirect URIs for a specific client.
+
+    Args:
+        mode: "replace" (replace all), "add" (append), or "remove" (remove specific URIs)
+    """
+    try:
+        # Get client by clientId
+        clients = admin.get_clients()
+        client = next((c for c in clients if c['clientId'] == client_id), None)
+
+        if not client:
+            print(f"Client '{client_id}' not found")
+            return False
+
+        internal_id = client['id']
+        current_uris = client.get('redirectUris', [])
+
+        if mode == "replace":
+            new_uris = redirect_uris
+            print(f"✓ Replaced redirect URIs for '{client_id}'")
+            print(f"  Old: {current_uris}")
+            print(f"  New: {new_uris}")
+        elif mode == "add":
+            new_uris = list(set(current_uris + redirect_uris))  # Remove duplicates
+            print(f"✓ Added redirect URIs to '{client_id}'")
+            print(f"  Added: {redirect_uris}")
+            print(f"  Result: {new_uris}")
+        elif mode == "remove":
+            new_uris = [uri for uri in current_uris if uri not in redirect_uris]
+            print(f"✓ Removed redirect URIs from '{client_id}'")
+            print(f"  Removed: {redirect_uris}")
+            print(f"  Result: {new_uris}")
+        else:
+            print(f"✗ Invalid mode '{mode}'. Use 'replace', 'add', or 'remove'")
+            return False
+
+        # Update client
+        admin.update_client(internal_id, {'redirectUris': new_uris})
+        return True
+
+    except Exception as e:
+        print(f"✗ Error updating client '{client_id}': {e}")
+        return False
+
+
+def batch_update_redirect_uris(admin: KeycloakAdmin, client_ids: List[str],
+                               redirect_uris: List[str], mode: str = "replace"):
+    """Update redirect URIs for multiple clients."""
+    success_count = 0
+    failed_count = 0
+
+    print(f"\nUpdating redirect URIs for {len(client_ids)} clients...")
+    print(f"Mode: {mode}")
+    print(f"URIs: {redirect_uris}\n")
+
+    for client_id in client_ids:
+        if update_client_redirect_uris(admin, client_id, redirect_uris, mode):
+            success_count += 1
+        else:
+            failed_count += 1
+        print()
+
+    print("=" * 60)
+    print(f"Summary: {success_count} succeeded, {failed_count} failed")
+    return success_count, failed_count
+
+
+def find_and_replace_redirect_uri(admin: KeycloakAdmin, old_pattern: str, new_uri: str,
+                                   dry_run: bool = False):
+    """
+    Find all clients with redirect URIs containing a pattern and replace them.
+
+    Args:
+        old_pattern: Pattern to search for in redirect URIs
+        new_uri: New URI to replace matching URIs with
+        dry_run: If True, only show what would be changed
+    """
+    try:
+        clients = admin.get_clients()
+        matching_clients = []
+
+        print(f"\nSearching for redirect URIs containing: '{old_pattern}'")
+        print(f"Will replace with: '{new_uri}'\n")
+
+        for client in clients:
+            client_id = client.get('clientId', '')
+            redirect_uris = client.get('redirectUris', [])
+
+            # Check if any redirect URI contains the pattern
+            matching_uris = [uri for uri in redirect_uris if old_pattern in uri]
+
+            if matching_uris:
+                matching_clients.append({
+                    'clientId': client_id,
+                    'id': client['id'],
+                    'oldUris': redirect_uris,
+                    'matchingUris': matching_uris
+                })
+
+        if not matching_clients:
+            print(f"No clients found with redirect URIs containing '{old_pattern}'")
+            return
+
+        print(f"Found {len(matching_clients)} clients:\n")
+
+        for idx, client_info in enumerate(matching_clients, 1):
+            print(f"{idx}. {client_info['clientId']}")
+            print(f"   Matching URIs: {client_info['matchingUris']}")
+
+            # Calculate new URIs
+            new_uris = [new_uri if old_pattern in uri else uri for uri in client_info['oldUris']]
+            print(f"   Would become: {new_uris}")
+            print()
+
+        if dry_run:
+            print("⚠ DRY RUN - No changes made")
+            return
+
+        # Confirm
+        confirm = input(f"\nUpdate redirect URIs for {len(matching_clients)} clients? (yes/no): ").strip().lower()
+        if confirm != 'yes':
+            print("Cancelled.")
+            return
+
+        # Execute updates
+        success_count = 0
+        for client_info in matching_clients:
+            try:
+                new_uris = [new_uri if old_pattern in uri else uri for uri in client_info['oldUris']]
+                admin.update_client(client_info['id'], {'redirectUris': new_uris})
+                print(f"✓ Updated {client_info['clientId']}")
+                success_count += 1
+            except Exception as e:
+                print(f"✗ Failed to update {client_info['clientId']}: {e}")
+
+        print(f"\nCompleted: {success_count}/{len(matching_clients)} clients updated")
+
+    except Exception as e:
+        print(f"Error: {e}")
+
+
 def update_client_audience(admin: KeycloakAdmin, client_id: str, new_audience: str, mapper_name: str = "audience-mapper"):
     """Update the audience for a specific client."""
     try:
@@ -548,6 +728,26 @@ def main():
     # Interactive command
     subparsers.add_parser('interactive', help='Interactive mode to find and fix clients')
 
+    # Redirect URI commands
+    list_redirects_parser = subparsers.add_parser('list-redirect-uris', help='List all clients with redirect URIs')
+    list_redirects_parser.add_argument('--filter', help='Filter by URI containing text')
+
+    update_redirects_parser = subparsers.add_parser('update-redirect-uris',
+                                                     help='Update redirect URIs for specific clients')
+    update_redirects_parser.add_argument('--client-ids', required=True, help='Comma-separated client IDs')
+    update_redirects_parser.add_argument('--uris', required=True, help='Comma-separated redirect URIs')
+    update_redirects_parser.add_argument('--mode', choices=['replace', 'add', 'remove'], default='replace',
+                                         help='Update mode: replace (default), add, or remove')
+
+    find_replace_redirects_parser = subparsers.add_parser('find-replace-redirect-uris',
+                                                          help='Find and replace redirect URIs containing a pattern')
+    find_replace_redirects_parser.add_argument('--old-pattern', required=True,
+                                               help='Pattern to search for in redirect URIs')
+    find_replace_redirects_parser.add_argument('--new-uri', required=True,
+                                               help='New URI to replace matching URIs with')
+    find_replace_redirects_parser.add_argument('--dry-run', action='store_true',
+                                               help='Show what would be changed without making changes')
+
     # User commands
     user_list_parser = subparsers.add_parser('list-users', help='List all users')
     user_list_parser.add_argument('--filter', help='Filter users by username (case-insensitive)')
@@ -596,6 +796,28 @@ def main():
 
     elif args.command == 'interactive':
         interactive_mode(admin)
+
+    elif args.command == 'list-redirect-uris':
+        list_clients_with_redirect_uris(admin, args.filter)
+
+    elif args.command == 'update-redirect-uris':
+        client_ids = [c.strip() for c in args.client_ids.split(',')]
+        redirect_uris = [u.strip() for u in args.uris.split(',')]
+
+        print(f"\n⚠️  WARNING: About to update redirect URIs for {len(client_ids)} clients")
+        print(f"Mode: {args.mode}")
+        print(f"URIs: {redirect_uris}")
+
+        confirm = input("\nType 'yes' to confirm: ").strip().lower()
+        if confirm == 'yes':
+            batch_update_redirect_uris(admin, client_ids, redirect_uris, args.mode)
+        else:
+            print("Cancelled.")
+
+    elif args.command == 'find-replace-redirect-uris':
+        if args.dry_run:
+            print("\n⚠ DRY RUN MODE - No changes will be made\n")
+        find_and_replace_redirect_uri(admin, args.old_pattern, args.new_uri, dry_run=args.dry_run)
 
     elif args.command == 'list-users':
         list_users(admin, args.filter)

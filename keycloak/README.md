@@ -51,6 +51,47 @@ python keycloak_admin.py update-audience \
 python keycloak_admin.py interactive
 ```
 
+### Redirect URI Management
+
+```bash
+# List all clients with their redirect URIs
+python keycloak_admin.py list-redirect-uris
+
+# List clients with redirect URIs containing a pattern
+python keycloak_admin.py list-redirect-uris --filter "localhost"
+
+# Update redirect URIs for specific clients
+# Mode: replace (default), add, or remove
+python keycloak_admin.py update-redirect-uris \
+  --client-ids client1,client2,client3 \
+  --uris "https://new.example.com/*,https://new.example.com:8080/*" \
+  --mode replace
+
+# Add redirect URIs (append to existing)
+python keycloak_admin.py update-redirect-uris \
+  --client-ids client1,client2 \
+  --uris "https://additional.example.com/*" \
+  --mode add
+
+# Remove specific redirect URIs
+python keycloak_admin.py update-redirect-uris \
+  --client-ids client1,client2 \
+  --uris "https://old.example.com/*" \
+  --mode remove
+
+# Find and replace redirect URIs containing a pattern
+# This searches all clients and replaces matching URIs
+python keycloak_admin.py find-replace-redirect-uris \
+  --old-pattern "http://localhost:8080" \
+  --new-uri "https://production.example.com" \
+  --dry-run
+
+# Execute the replacement (without --dry-run)
+python keycloak_admin.py find-replace-redirect-uris \
+  --old-pattern "http://localhost:8080" \
+  --new-uri "https://production.example.com"
+```
+
 ### User Management
 
 ```bash
@@ -102,6 +143,7 @@ python keycloak_admin.py sync-user-attributes
 ## Features
 
 - ✓ Client audience management (fix incorrect audience configurations)
+- ✓ Redirect URI management (list, update, find and replace)
 - ✓ Batch user password resets (temporary or permanent)
 - ✓ User attribute sync from username patterns
 - ✓ User profile attribute creation (appear in User Details tab)
