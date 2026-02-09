@@ -11,7 +11,7 @@ Scripts for running gRPC UI tools:
 
 ### keycloak/
 Tools for managing Keycloak instances:
-- `manage_clients.py` - Script to bulk update Keycloak client configurations
+- `keycloak_admin.py` - Comprehensive admin tool for clients, users, and attributes
 - `requirements.txt` - Python dependencies
 
 ## Setup

@@ -1,6 +1,6 @@
-# Keycloak Management Scripts
+# Keycloak Admin Tools
 
-Scripts for managing Keycloak client configurations.
+Comprehensive Python tool for managing Keycloak realms, clients, users, and attributes.
 
 ## Setup
 
@@ -25,77 +25,89 @@ KEYCLOAK_PASSWORD=your-password
 
 **Note:** The `.env` file is gitignored for security.
 
-## Scripts
+## keycloak_admin.py
 
-### manage_clients.py
+All-in-one tool for Keycloak administration tasks.
 
-Tool for bulk updating client configurations and managing users.
+### Client Management
 
-**Client Management:**
 ```bash
 # List all clients
-python manage_clients.py list
+python keycloak_admin.py list
 
 # Show client details
-python manage_clients.py show <client-id>
+python keycloak_admin.py show <client-id>
 
 # Find clients with audience mappers
-python manage_clients.py find
-python manage_clients.py find --audience "https://ohalo.platform.partner.dsp-prod-green.virtru.com"
+python keycloak_admin.py find
+python keycloak_admin.py find --audience "https://ohalo.platform.partner.dsp-prod-green.virtru.com"
 
 # Update audience for specific clients (comma-separated)
-python manage_clients.py update-audience \
+python keycloak_admin.py update-audience \
   --client-ids client1,client2,client3 \
   --audience "https://ohalo.platform.partner.dsp-prod-green.virtru.com"
 
 # Interactive mode - find and fix clients with wrong audience
-python manage_clients.py interactive
+python keycloak_admin.py interactive
 ```
 
-**User Management:**
+### User Management
+
 ```bash
 # List all users
-python manage_clients.py list-users
+python keycloak_admin.py list-users
 
 # List users with filter
-python manage_clients.py list-users --filter "test"
+python keycloak_admin.py list-users --filter "test"
 
 # Reset passwords for multiple users (comma-separated)
 # By default, passwords are temporary (users must change on first login)
-python manage_clients.py reset-passwords \
+python keycloak_admin.py reset-passwords \
   --usernames user1,user2,user3 \
   --password "NewPassword123!"
 
 # Set permanent passwords
-python manage_clients.py reset-passwords \
+python keycloak_admin.py reset-passwords \
   --usernames user1,user2 \
   --password "NewPassword123!" \
   --permanent
 ```
 
-**User Attribute Sync:**
-```bash
-# Parse usernames and automatically set attributes based on naming pattern
-# Pattern: {classification}-{nationality}-{needToKnow}
-# Examples:
-#   secret-usa-aaa     → Classification: Secret, Nationality: USA, Need To Know: AAA
-#   top-secret-gbr-bbb → Classification: Top Secret, Nationality: GBR, Need To Know: BBB
-#   classified-fra-int → Classification: Classified, Nationality: FRA, Need To Know: INT
+### User Attribute Sync
 
+Parse usernames and automatically set attributes based on naming patterns.
+
+**Pattern:** `{classification}-{nationality}-{needToKnow}`
+
+**Examples:**
+- `secret-usa-aaa` → Classification: Secret, Nationality: USA, Need To Know: AAA
+- `top-secret-gbr-bbb` → Classification: Top Secret, Nationality: GBR, Need To Know: BBB
+- `classified-fra-int` → Classification: Classified, Nationality: FRA, Need To Know: INT
+
+```bash
 # Dry run - see what would be done without making changes
-python manage_clients.py sync-user-attributes --dry-run
+python keycloak_admin.py sync-user-attributes --dry-run
 
 # Execute - creates user profile attributes and sets user attributes
-python manage_clients.py sync-user-attributes
+python keycloak_admin.py sync-user-attributes
 ```
 
-This command will:
-1. Create user profile attributes (`classification`, `nationality`, `needToKnow`) in Realm Settings if they don't exist
-2. Scan all users in the realm
-3. Parse usernames matching the pattern `{classification}-{nationality}-{needToKnow}`
-4. Set the appropriate attributes for each matching user
-5. Attributes will then appear in the User Details tab (not just the Attributes tab)
-```
+**What this command does:**
+1. Creates user profile attributes (`classification`, `nationality`, `needToKnow`) in Realm Settings if they don't exist
+2. Scans all users in the realm
+3. Parses usernames matching the pattern
+4. Sets the appropriate attributes for each matching user
+5. Attributes then appear in the User Details tab (not just the Attributes tab)
+
+## Features
+
+- ✓ Client audience management (fix incorrect audience configurations)
+- ✓ Batch user password resets (temporary or permanent)
+- ✓ User attribute sync from username patterns
+- ✓ User profile attribute creation (appear in User Details tab)
+- ✓ Interactive mode for discovering issues
+- ✓ Dry-run mode for safe testing
+- ✓ Comprehensive error handling and reporting
 
 ## Keycloak Instance
 
