@@ -116,14 +116,18 @@ def find_clients_with_audience(admin: KeycloakAdmin, audience: Optional[str] = N
                 for mapper in mappers:
                     if mapper.get('protocolMapper') == 'oidc-audience-mapper':
                         config = mapper.get('config', {})
-                        current_audience = config.get('included.client.audience', '')
+                        # Check both custom and client audience fields
+                        custom_audience = config.get('included.custom.audience', '')
+                        client_audience = config.get('included.client.audience', '')
+                        current_audience = custom_audience or client_audience
 
                         if audience is None or current_audience == audience:
                             matching.append({
                                 'clientId': client_id,
                                 'id': internal_id,
                                 'mapper': mapper.get('name'),
-                                'audience': current_audience
+                                'audience': current_audience,
+                                'audience_type': 'custom' if custom_audience else 'client'
                             })
             except Exception as e:
                 # Skip clients we can't read mappers for
@@ -156,21 +160,32 @@ def update_client_audience(admin: KeycloakAdmin, client_id: str, new_audience: s
         )
 
         if audience_mapper:
-            # Update existing mapper
+            # Update existing mapper - use custom audience field and clear client audience
             mapper_id = audience_mapper['id']
-            audience_mapper['config']['included.client.audience'] = new_audience
+            config = audience_mapper['config']
+
+            # Remove old client audience if present
+            config.pop('included.client.audience', None)
+
+            # Set custom audience
+            config['included.custom.audience'] = new_audience
+            config['access.token.claim'] = 'true'
+            config['id.token.claim'] = 'true'
+            config['introspection.token.claim'] = 'true'
+
             admin.update_mapper(internal_id, mapper_id, audience_mapper)
             print(f"✓ Updated audience for '{client_id}' to '{new_audience}'")
         else:
-            # Create new mapper
+            # Create new mapper with custom audience
             mapper_payload = {
                 'name': mapper_name,
                 'protocol': 'openid-connect',
                 'protocolMapper': 'oidc-audience-mapper',
                 'config': {
-                    'included.client.audience': new_audience,
+                    'included.custom.audience': new_audience,
                     'access.token.claim': 'true',
-                    'id.token.claim': 'false'
+                    'id.token.claim': 'true',
+                    'introspection.token.claim': 'true'
                 }
             }
             admin.add_mapper_to_client(internal_id, mapper_payload)
@@ -196,10 +211,12 @@ def interactive_mode(admin: KeycloakAdmin):
         return
 
     print(f"\nFound {len(clients_with_audience)} clients with audience configuration:\n")
-    print(f"{'#':<4} {'Client ID':<40} {'Current Audience':<30}")
-    print("-" * 80)
+    print(f"{'#':<4} {'Client ID':<40} {'Type':<10} {'Current Audience':<40}")
+    print("-" * 100)
     for idx, client in enumerate(clients_with_audience, 1):
-        print(f"{idx:<4} {client['clientId']:<40} {client['audience']:<30}")
+        aud_type = client.get('audience_type', 'unknown')
+        marker = "✓" if aud_type == "custom" else "✗"
+        print(f"{idx:<4} {client['clientId']:<40} {marker} {aud_type:<8} {client['audience']:<40}")
 
     print("\nWhat would you like to do?")
     print("1. Update all clients to a new audience")
@@ -283,8 +300,12 @@ def main():
     elif args.command == 'find':
         clients = find_clients_with_audience(admin, args.audience)
         print(f"\nFound {len(clients)} clients:\n")
+        print(f"{'Client ID':<40} {'Type':<10} {'Audience'}")
+        print("-" * 80)
         for client in clients:
-            print(f"{client['clientId']:<40} audience: {client['audience']}")
+            aud_type = client.get('audience_type', 'unknown')
+            marker = "✓" if aud_type == "custom" else "✗"
+            print(f"{client['clientId']:<40} {marker} {aud_type:<8} {client['audience']}")
 
     elif args.command == 'update-audience':
         client_ids = [c.strip() for c in args.client_ids.split(',')]
