@@ -173,7 +173,7 @@ def update_client_audience(admin: KeycloakAdmin, client_id: str, new_audience: s
             config['id.token.claim'] = 'true'
             config['introspection.token.claim'] = 'true'
 
-            admin.update_mapper(internal_id, mapper_id, audience_mapper)
+            admin.update_client_mapper(internal_id, mapper_id, audience_mapper)
             print(f"✓ Updated audience for '{client_id}' to '{new_audience}'")
         else:
             # Create new mapper with custom audience
