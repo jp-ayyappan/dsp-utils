@@ -14,6 +14,11 @@ Tools for managing Keycloak instances:
 - `keycloak_admin.py` - Comprehensive admin tool for clients, users, and attributes
 - `requirements.txt` - Python dependencies
 
+### postman/
+Postman collections for DSP APIs:
+- `DSP-gRPC-APIs.postman_collection.json` - Comprehensive gRPC API collection
+- Includes Tagging PDP, Policy Artifact, and NanoTDF Rewrap services
+
 ## Setup
 
 ### Keycloak Python Scripts
