@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Virtru DSP gRPC APIs",
-    "description": "Comprehensive collection for interacting with Virtru Data Security Platform gRPC endpoints.\n\n**Services Included:**\n- Tagging PDP Service (v2)\n- Policy Artifact Service (v1)\n- NanoTDF Rewrap Service (v1)\n\n**Authentication:**\n1. Configure Keycloak variables in the Variables tab\n2. Run 'Get Access Token' request to authenticate\n3. Token is automatically saved and used for all subsequent requests\n4. Token auto-refresh on expiry",
+    "description": "Comprehensive collection for interacting with Virtru Data Security Platform gRPC endpoints.\n\n**Services Included:**\n- Authentication (Keycloak OAuth)\n- Policy Service (Namespaces, Attributes, Values, Subject Mappings, Resource Mappings, Subject Condition Sets, Key Access Servers)\n- KAS Service (Rewrap, PublicKey)\n- Wellknown Service (Configuration)\n- Authorization Service (Decisions, Entitlements)\n- Shared Service (Entitlements, Transformations)\n- Tagging PDP Service (v2)\n- Policy Artifact Service (v1)\n- NanoTDF Rewrap Service (v1)\n\n**Authentication:**\n1. Configure Keycloak variables in the Variables tab\n2. Run 'Get Access Token' request to authenticate\n3. Token is automatically saved and used for all subsequent requests\n4. Token auto-refresh on expiry",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -42,6 +42,12 @@
       "description": "Your password"
     },
     {
+      "key": "keycloak_client_secret",
+      "value": "",
+      "type": "string",
+      "description": "Client secret for client credentials flow"
+    },
+    {
       "key": "auth_token",
       "value": "",
       "type": "string",
@@ -54,10 +60,34 @@
       "description": "Token expiry timestamp (auto-populated)"
     },
     {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string",
+      "description": "Refresh token (auto-populated)"
+    },
+    {
       "key": "use_tls",
       "value": "true",
       "type": "boolean",
       "description": "Use TLS for gRPC connections"
+    },
+    {
+      "key": "namespace_id",
+      "value": "",
+      "type": "string",
+      "description": "Created namespace ID (auto-populated)"
+    },
+    {
+      "key": "attribute_id",
+      "value": "",
+      "type": "string",
+      "description": "Created attribute ID (auto-populated)"
+    },
+    {
+      "key": "value_id",
+      "value": "",
+      "type": "string",
+      "description": "Created value ID (auto-populated)"
     }
   ],
   "auth": {
@@ -351,6 +381,1307 @@
         }
       ],
       "description": "Authentication requests for obtaining OAuth tokens from Keycloak.\n\n**Quick Start:**\n1. Set credentials in Variables tab\n2. Run 'Get Access Token (Password Grant)'\n3. Token is auto-saved and used for all API calls\n\n**Auto-Refresh:**\nThe collection automatically refreshes expired tokens before each request."
+    },
+    {
+      "name": "Policy Service",
+      "item": [
+        {
+          "name": "Namespaces",
+          "item": [
+            {
+              "name": "CreateNamespace",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "if (jsonData.namespace && jsonData.namespace.id) {",
+                      "    pm.collectionVariables.set('namespace_id', jsonData.namespace.id);",
+                      "    console.log('Namespace ID saved:', jsonData.namespace.id);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"https://example.com/attr/classification\",\n  \"metadata\": {\n    \"labels\": {\n      \"environment\": \"production\",\n      \"department\": \"security\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.namespaces.NamespaceService/CreateNamespace",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.namespaces.NamespaceService", "CreateNamespace"]
+                },
+                "description": "Create a new namespace for organizing attributes.\n\n**Namespace Lifecycle Step 1/5**\n\nNamespaces are URIs that group related attributes together. Common patterns:\n- `https://example.com/attr/classification` - Security classifications\n- `https://example.com/attr/departments` - Department-based attributes\n- `https://example.com/attr/projects` - Project-specific attributes\n\n**Auto-saves:** `namespace_id` for use in subsequent requests"
+              },
+              "response": []
+            },
+            {
+              "name": "ListNamespaces",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"state\": \"ACTIVE\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.namespaces.NamespaceService/ListNamespaces",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.namespaces.NamespaceService", "ListNamespaces"]
+                },
+                "description": "List all namespaces, optionally filtered by state.\n\n**States:**\n- ACTIVE: Currently active namespaces\n- INACTIVE: Deactivated namespaces\n- ANY: All namespaces regardless of state"
+              },
+              "response": []
+            },
+            {
+              "name": "GetNamespace",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"{{namespace_id}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.namespaces.NamespaceService/GetNamespace",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.namespaces.NamespaceService", "GetNamespace"]
+                },
+                "description": "Get details of a specific namespace by ID."
+              },
+              "response": []
+            },
+            {
+              "name": "UpdateNamespace",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"{{namespace_id}}\",\n  \"metadata\": {\n    \"labels\": {\n      \"environment\": \"production\",\n      \"department\": \"security\",\n      \"updated\": \"true\"\n    }\n  },\n  \"metadata_update_behavior\": \"EXTEND\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.namespaces.NamespaceService/UpdateNamespace",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.namespaces.NamespaceService", "UpdateNamespace"]
+                },
+                "description": "Update namespace metadata.\n\n**Update Behaviors:**\n- EXTEND: Merge new metadata with existing\n- REPLACE: Replace all metadata with new values"
+              },
+              "response": []
+            },
+            {
+              "name": "DeactivateNamespace",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"{{namespace_id}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.namespaces.NamespaceService/DeactivateNamespace",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.namespaces.NamespaceService", "DeactivateNamespace"]
+                },
+                "description": "Deactivate a namespace. This soft-deletes the namespace and all its attributes.\n\n**Warning:** This action cascades to all attributes and values in the namespace."
+              },
+              "response": []
+            }
+          ],
+          "description": "Namespace management - Create and organize attribute namespaces"
+        },
+        {
+          "name": "Attributes",
+          "item": [
+            {
+              "name": "CreateAttribute",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "if (jsonData.attribute && jsonData.attribute.id) {",
+                      "    pm.collectionVariables.set('attribute_id', jsonData.attribute.id);",
+                      "    console.log('Attribute ID saved:', jsonData.attribute.id);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"namespace_id\": \"{{namespace_id}}\",\n  \"name\": \"SecurityLevel\",\n  \"rule\": \"HIERARCHY\",\n  \"metadata\": {\n    \"labels\": {\n      \"type\": \"classification\",\n      \"category\": \"security\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/CreateAttribute",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.attributes.AttributesService", "CreateAttribute"]
+                },
+                "description": "Create a new attribute within a namespace.\n\n**Namespace Lifecycle Step 2/5**\n\nAttributes define the data classification properties. Each attribute has a name and belongs to a namespace.\n\n**Rules:**\n- HIERARCHY: Values have ordered relationships (e.g., Top Secret > Secret > Confidential)\n- ALL_OF: All attribute values must be present\n- ANY_OF: Any attribute value is sufficient\n\n**Auto-saves:** `attribute_id` for use in subsequent requests"
+              },
+              "response": []
+            },
+            {
+              "name": "ListAttributes",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"namespace_id\": \"{{namespace_id}}\",\n  \"state\": \"ACTIVE\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/ListAttributes",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.attributes.AttributesService", "ListAttributes"]
+                },
+                "description": "List all attributes, optionally filtered by namespace and state."
+              },
+              "response": []
+            },
+            {
+              "name": "GetAttribute",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"{{attribute_id}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/GetAttribute",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.attributes.AttributesService", "GetAttribute"]
+                },
+                "description": "Get details of a specific attribute by ID."
+              },
+              "response": []
+            },
+            {
+              "name": "UpdateAttribute",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"{{attribute_id}}\",\n  \"metadata\": {\n    \"labels\": {\n      \"type\": \"classification\",\n      \"category\": \"security\",\n      \"updated\": \"true\"\n    }\n  },\n  \"metadata_update_behavior\": \"EXTEND\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/UpdateAttribute",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.attributes.AttributesService", "UpdateAttribute"]
+                },
+                "description": "Update attribute metadata."
+              },
+              "response": []
+            },
+            {
+              "name": "DeactivateAttribute",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"{{attribute_id}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/DeactivateAttribute",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.attributes.AttributesService", "DeactivateAttribute"]
+                },
+                "description": "Deactivate an attribute and all its values."
+              },
+              "response": []
+            },
+            {
+              "name": "GetAttributeValuesByFqns",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fqns\": [\n    \"https://example.com/attr/classification/attr/SecurityLevel/value/Secret\",\n    \"https://example.com/attr/classification/attr/SecurityLevel/value/TopSecret\"\n  ],\n  \"with_value\": {\n    \"with_subject_maps\": true,\n    \"with_resource_maps\": true\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/GetAttributeValuesByFqns",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.attributes.AttributesService", "GetAttributeValuesByFqns"]
+                },
+                "description": "Retrieve multiple attribute values by their fully qualified names (FQNs).\n\nFQN format: `namespace/attr/AttributeName/value/ValueName`\n\n**Options:**\n- `with_subject_maps`: Include subject mappings\n- `with_resource_maps`: Include resource mappings"
+              },
+              "response": []
+            }
+          ],
+          "description": "Attribute management - Create and manage data attributes"
+        },
+        {
+          "name": "Attribute Values",
+          "item": [
+            {
+              "name": "CreateAttributeValue",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const jsonData = pm.response.json();",
+                      "if (jsonData.value && jsonData.value.id) {",
+                      "    pm.collectionVariables.set('value_id', jsonData.value.id);",
+                      "    console.log('Value ID saved:', jsonData.value.id);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"attribute_id\": \"{{attribute_id}}\",\n  \"value\": \"Secret\",\n  \"metadata\": {\n    \"labels\": {\n      \"level\": \"2\",\n      \"clearance_required\": \"true\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/CreateAttributeValue",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.attributes.AttributesService", "CreateAttributeValue"]
+                },
+                "description": "Create a new value for an attribute.\n\n**Namespace Lifecycle Step 3/5**\n\nValues are the actual data classification levels or categories.\n\nExample hierarchy:\n- TopSecret (level 3)\n- Secret (level 2)\n- Confidential (level 1)\n- Public (level 0)\n\n**Auto-saves:** `value_id` for use in subsequent requests"
+              },
+              "response": []
+            },
+            {
+              "name": "CreateAttributeValue - TopSecret",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"attribute_id\": \"{{attribute_id}}\",\n  \"value\": \"TopSecret\",\n  \"metadata\": {\n    \"labels\": {\n      \"level\": \"3\",\n      \"clearance_required\": \"true\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/CreateAttributeValue",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.attributes.AttributesService", "CreateAttributeValue"]
+                },
+                "description": "Create TopSecret classification value."
+              },
+              "response": []
+            },
+            {
+              "name": "CreateAttributeValue - Confidential",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"attribute_id\": \"{{attribute_id}}\",\n  \"value\": \"Confidential\",\n  \"metadata\": {\n    \"labels\": {\n      \"level\": \"1\",\n      \"clearance_required\": \"false\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/CreateAttributeValue",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.attributes.AttributesService", "CreateAttributeValue"]
+                },
+                "description": "Create Confidential classification value."
+              },
+              "response": []
+            },
+            {
+              "name": "ListAttributeValues",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"attribute_id\": \"{{attribute_id}}\",\n  \"state\": \"ACTIVE\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/ListAttributeValues",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.attributes.AttributesService", "ListAttributeValues"]
+                },
+                "description": "List all values for an attribute."
+              },
+              "response": []
+            },
+            {
+              "name": "GetAttributeValue",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"{{value_id}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/GetAttributeValue",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.attributes.AttributesService", "GetAttributeValue"]
+                },
+                "description": "Get details of a specific attribute value by ID."
+              },
+              "response": []
+            },
+            {
+              "name": "UpdateAttributeValue",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"{{value_id}}\",\n  \"metadata\": {\n    \"labels\": {\n      \"level\": \"2\",\n      \"clearance_required\": \"true\",\n      \"updated\": \"true\"\n    }\n  },\n  \"metadata_update_behavior\": \"EXTEND\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/UpdateAttributeValue",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.attributes.AttributesService", "UpdateAttributeValue"]
+                },
+                "description": "Update attribute value metadata."
+              },
+              "response": []
+            },
+            {
+              "name": "DeactivateAttributeValue",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"{{value_id}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/DeactivateAttributeValue",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.attributes.AttributesService", "DeactivateAttributeValue"]
+                },
+                "description": "Deactivate an attribute value."
+              },
+              "response": []
+            }
+          ],
+          "description": "Attribute value management - Create and manage classification values"
+        },
+        {
+          "name": "Subject Mappings",
+          "item": [
+            {
+              "name": "CreateSubjectMapping",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"attribute_value_id\": \"{{value_id}}\",\n  \"actions\": [\n    {\n      \"standard\": \"STANDARD_ACTION_DECRYPT\"\n    },\n    {\n      \"standard\": \"STANDARD_ACTION_TRANSMIT\"\n    }\n  ],\n  \"subject_condition_set_id\": \"<subject-condition-set-id>\",\n  \"metadata\": {\n    \"labels\": {\n      \"department\": \"engineering\",\n      \"purpose\": \"data-access\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/CreateSubjectMapping",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.subjectmapping.SubjectMappingService", "CreateSubjectMapping"]
+                },
+                "description": "Map subjects (users/entities) to attribute values with specific actions.\n\n**Namespace Lifecycle Step 4/5**\n\nSubject mappings define WHO can perform WHAT actions on data with specific attributes.\n\n**Standard Actions:**\n- STANDARD_ACTION_DECRYPT: Decrypt and read data\n- STANDARD_ACTION_TRANSMIT: Forward/share data\n- STANDARD_ACTION_MODIFY: Edit data\n\n**Existing Subject:**\nUse `existing_subject_mappings` to reference an existing subject condition set."
+              },
+              "response": []
+            },
+            {
+              "name": "CreateSubjectMapping - With New Subject",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"attribute_value_id\": \"{{value_id}}\",\n  \"actions\": [\n    {\n      \"standard\": \"STANDARD_ACTION_DECRYPT\"\n    }\n  ],\n  \"new_subject_condition_set\": {\n    \"subject_sets\": [\n      {\n        \"condition_groups\": [\n          {\n            \"conditions\": [\n              {\n                \"subject_external_selector_value\": \".emailAddress\",\n                \"operator\": \"SUBJECT_MAPPING_OPERATOR_IN\",\n                \"subject_external_values\": [\n                  \"user@example.com\",\n                  \"admin@example.com\"\n                ]\n              }\n            ],\n            \"boolean_operator\": \"CONDITION_BOOLEAN_TYPE_ENUM_AND\"\n          }\n        ]\n      }\n    ]\n  },\n  \"metadata\": {\n    \"labels\": {\n      \"department\": \"security\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/CreateSubjectMapping",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.subjectmapping.SubjectMappingService", "CreateSubjectMapping"]
+                },
+                "description": "Create a subject mapping with inline subject condition set.\n\n**Subject Selectors:**\n- `.emailAddress`: User email\n- `.username`: Username\n- `.groups`: User group membership\n- `.role`: User role\n\n**Operators:**\n- IN: Value must be in the list\n- NOT_IN: Value must not be in the list"
+              },
+              "response": []
+            },
+            {
+              "name": "ListSubjectMappings",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/ListSubjectMappings",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.subjectmapping.SubjectMappingService", "ListSubjectMappings"]
+                },
+                "description": "List all subject mappings."
+              },
+              "response": []
+            },
+            {
+              "name": "GetSubjectMapping",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<subject-mapping-id>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/GetSubjectMapping",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.subjectmapping.SubjectMappingService", "GetSubjectMapping"]
+                },
+                "description": "Get details of a specific subject mapping."
+              },
+              "response": []
+            },
+            {
+              "name": "UpdateSubjectMapping",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<subject-mapping-id>\",\n  \"actions\": [\n    {\n      \"standard\": \"STANDARD_ACTION_DECRYPT\"\n    },\n    {\n      \"standard\": \"STANDARD_ACTION_TRANSMIT\"\n    },\n    {\n      \"standard\": \"STANDARD_ACTION_MODIFY\"\n    }\n  ],\n  \"metadata\": {\n    \"labels\": {\n      \"updated\": \"true\"\n    }\n  },\n  \"metadata_update_behavior\": \"EXTEND\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/UpdateSubjectMapping",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.subjectmapping.SubjectMappingService", "UpdateSubjectMapping"]
+                },
+                "description": "Update subject mapping actions and metadata."
+              },
+              "response": []
+            },
+            {
+              "name": "DeleteSubjectMapping",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<subject-mapping-id>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/DeleteSubjectMapping",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.subjectmapping.SubjectMappingService", "DeleteSubjectMapping"]
+                },
+                "description": "Delete a subject mapping."
+              },
+              "response": []
+            }
+          ],
+          "description": "Subject mapping management - Map users/entities to attribute values with permissions"
+        },
+        {
+          "name": "Resource Mappings",
+          "item": [
+            {
+              "name": "CreateResourceMapping",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"attribute_value_id\": \"{{value_id}}\",\n  \"terms\": [\n    \"classified\",\n    \"secret\",\n    \"confidential\"\n  ],\n  \"metadata\": {\n    \"labels\": {\n      \"type\": \"keyword-mapping\",\n      \"category\": \"auto-classification\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/CreateResourceMapping",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.resourcemapping.ResourceMappingService", "CreateResourceMapping"]
+                },
+                "description": "Map keywords/terms to attribute values for automatic classification.\n\n**Namespace Lifecycle Step 5/5**\n\nResource mappings enable automatic attribute assignment based on content keywords.\n\n**Use Cases:**\n- Keyword-based auto-classification\n- Content scanning and tagging\n- DLP policy enforcement\n\n**Example:** Documents containing \"secret\" are automatically tagged with Secret classification."
+              },
+              "response": []
+            },
+            {
+              "name": "ListResourceMappings",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/ListResourceMappings",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.resourcemapping.ResourceMappingService", "ListResourceMappings"]
+                },
+                "description": "List all resource mappings."
+              },
+              "response": []
+            },
+            {
+              "name": "GetResourceMapping",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<resource-mapping-id>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/GetResourceMapping",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.resourcemapping.ResourceMappingService", "GetResourceMapping"]
+                },
+                "description": "Get details of a specific resource mapping."
+              },
+              "response": []
+            },
+            {
+              "name": "UpdateResourceMapping",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<resource-mapping-id>\",\n  \"terms\": [\n    \"classified\",\n    \"secret\",\n    \"confidential\",\n    \"restricted\"\n  ],\n  \"metadata\": {\n    \"labels\": {\n      \"updated\": \"true\"\n    }\n  },\n  \"metadata_update_behavior\": \"EXTEND\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/UpdateResourceMapping",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.resourcemapping.ResourceMappingService", "UpdateResourceMapping"]
+                },
+                "description": "Update resource mapping terms and metadata."
+              },
+              "response": []
+            },
+            {
+              "name": "DeleteResourceMapping",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<resource-mapping-id>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/DeleteResourceMapping",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.resourcemapping.ResourceMappingService", "DeleteResourceMapping"]
+                },
+                "description": "Delete a resource mapping."
+              },
+              "response": []
+            }
+          ],
+          "description": "Resource mapping management - Map keywords to attributes for auto-classification"
+        },
+        {
+          "name": "Subject Condition Sets",
+          "item": [
+            {
+              "name": "CreateSubjectConditionSet",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"subject_sets\": [\n    {\n      \"condition_groups\": [\n        {\n          \"conditions\": [\n            {\n              \"subject_external_selector_value\": \".emailAddress\",\n              \"operator\": \"SUBJECT_MAPPING_OPERATOR_IN\",\n              \"subject_external_values\": [\n                \"admin@example.com\",\n                \"security@example.com\"\n              ]\n            },\n            {\n              \"subject_external_selector_value\": \".role\",\n              \"operator\": \"SUBJECT_MAPPING_OPERATOR_IN\",\n              \"subject_external_values\": [\n                \"administrator\",\n                \"security-officer\"\n              ]\n            }\n          ],\n          \"boolean_operator\": \"CONDITION_BOOLEAN_TYPE_ENUM_AND\"\n        }\n      ]\n    }\n  ],\n  \"metadata\": {\n    \"labels\": {\n      \"name\": \"security-team\",\n      \"department\": \"security\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/CreateSubjectConditionSet",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.subjectmapping.SubjectMappingService", "CreateSubjectConditionSet"]
+                },
+                "description": "Create reusable subject condition sets for complex subject matching.\n\n**Boolean Operators:**\n- AND: All conditions must be true\n- OR: At least one condition must be true\n\n**Condition Structure:**\n- Multiple condition groups can be combined\n- Each group has conditions with a boolean operator\n- Conditions check subject properties against values"
+              },
+              "response": []
+            },
+            {
+              "name": "ListSubjectConditionSets",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/ListSubjectConditionSets",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.subjectmapping.SubjectMappingService", "ListSubjectConditionSets"]
+                },
+                "description": "List all subject condition sets."
+              },
+              "response": []
+            },
+            {
+              "name": "GetSubjectConditionSet",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<subject-condition-set-id>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/GetSubjectConditionSet",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.subjectmapping.SubjectMappingService", "GetSubjectConditionSet"]
+                },
+                "description": "Get details of a specific subject condition set."
+              },
+              "response": []
+            },
+            {
+              "name": "UpdateSubjectConditionSet",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<subject-condition-set-id>\",\n  \"metadata\": {\n    \"labels\": {\n      \"updated\": \"true\"\n    }\n  },\n  \"metadata_update_behavior\": \"EXTEND\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/UpdateSubjectConditionSet",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.subjectmapping.SubjectMappingService", "UpdateSubjectConditionSet"]
+                },
+                "description": "Update subject condition set metadata."
+              },
+              "response": []
+            },
+            {
+              "name": "DeleteSubjectConditionSet",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<subject-condition-set-id>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/DeleteSubjectConditionSet",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.subjectmapping.SubjectMappingService", "DeleteSubjectConditionSet"]
+                },
+                "description": "Delete a subject condition set.\n\n**Warning:** This will fail if the condition set is referenced by any subject mappings."
+              },
+              "response": []
+            }
+          ],
+          "description": "Subject condition set management - Create reusable subject matching rules"
+        },
+        {
+          "name": "Key Access Servers",
+          "item": [
+            {
+              "name": "CreateKeyAccessServer",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"uri\": \"https://kas.example.com\",\n  \"public_key\": {\n    \"remote\": \"https://kas.example.com/public_key\"\n  },\n  \"metadata\": {\n    \"labels\": {\n      \"environment\": \"production\",\n      \"region\": \"us-east-1\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/CreateKeyAccessServer",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.kasregistry.KeyAccessServerRegistryService", "CreateKeyAccessServer"]
+                },
+                "description": "Register a Key Access Server (KAS) for key management.\n\n**Public Key Options:**\n- `remote`: URL to fetch public key\n- `local`: Inline PEM-encoded public key\n\n**KAS Configuration:**\nKAS instances handle encryption/decryption operations and must be registered before use."
+              },
+              "response": []
+            },
+            {
+              "name": "CreateKeyAccessServer - With Local Key",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"uri\": \"https://kas-backup.example.com\",\n  \"public_key\": {\n    \"local\": \"-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\\n-----END PUBLIC KEY-----\"\n  },\n  \"metadata\": {\n    \"labels\": {\n      \"environment\": \"backup\",\n      \"region\": \"us-west-2\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/CreateKeyAccessServer",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.kasregistry.KeyAccessServerRegistryService", "CreateKeyAccessServer"]
+                },
+                "description": "Register a KAS with inline public key."
+              },
+              "response": []
+            },
+            {
+              "name": "ListKeyAccessServers",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/ListKeyAccessServers",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.kasregistry.KeyAccessServerRegistryService", "ListKeyAccessServers"]
+                },
+                "description": "List all registered Key Access Servers."
+              },
+              "response": []
+            },
+            {
+              "name": "GetKeyAccessServer",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<kas-id>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/GetKeyAccessServer",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.kasregistry.KeyAccessServerRegistryService", "GetKeyAccessServer"]
+                },
+                "description": "Get details of a specific Key Access Server."
+              },
+              "response": []
+            },
+            {
+              "name": "UpdateKeyAccessServer",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<kas-id>\",\n  \"uri\": \"https://kas-updated.example.com\",\n  \"public_key\": {\n    \"remote\": \"https://kas-updated.example.com/public_key\"\n  },\n  \"metadata\": {\n    \"labels\": {\n      \"updated\": \"true\"\n    }\n  },\n  \"metadata_update_behavior\": \"EXTEND\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/UpdateKeyAccessServer",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.kasregistry.KeyAccessServerRegistryService", "UpdateKeyAccessServer"]
+                },
+                "description": "Update Key Access Server configuration."
+              },
+              "response": []
+            },
+            {
+              "name": "DeleteKeyAccessServer",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<kas-id>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/DeleteKeyAccessServer",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.kasregistry.KeyAccessServerRegistryService", "DeleteKeyAccessServer"]
+                },
+                "description": "Delete a Key Access Server registration."
+              },
+              "response": []
+            }
+          ],
+          "description": "Key Access Server management - Register and manage KAS instances"
+        }
+      ],
+      "description": "Policy Service - Comprehensive policy and attribute management\n\n**Complete Workflow:**\n1. Create Namespace\n2. Create Attribute\n3. Create Attribute Values\n4. Create Subject Mappings (who can access)\n5. Create Resource Mappings (auto-classification rules)\n\nThis establishes a complete data classification and access control policy."
+    },
+    {
+      "name": "KAS Service",
+      "item": [
+        {
+          "name": "Rewrap",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"signed_request_token\": \"<jwt-token>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/kas.AccessService/Rewrap",
+              "host": ["{{base_url}}"],
+              "path": ["kas.AccessService", "Rewrap"]
+            },
+            "description": "Rewrap encrypted data encryption keys (DEKs) for authorized users.\n\n**Process:**\n1. Client sends encrypted DEK wrapped with KAS public key\n2. KAS validates user entitlements against policy\n3. If authorized, KAS rewraps DEK with user's public key\n4. Client can then decrypt the DEK and access data\n\n**Request Token:**\nJWT containing:\n- Encrypted DEK\n- Data attributes\n- User identity\n- Client public key"
+          },
+          "response": []
+        },
+        {
+          "name": "PublicKey (POST)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"algorithm\": \"rsa:2048\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/kas.AccessService/PublicKey",
+              "host": ["{{base_url}}"],
+              "path": ["kas.AccessService", "PublicKey"]
+            },
+            "description": "Retrieve the KAS public key for encrypting DEKs.\n\n**Use this key to:**\n- Wrap data encryption keys before sending to KAS\n- Validate KAS signatures\n\n**Algorithms:**\n- rsa:2048\n- rsa:4096\n- ec:secp256r1"
+          },
+          "response": []
+        },
+        {
+          "name": "PublicKey (GET - Deprecated)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/kas/v2/kas_public_key?algorithm=rsa:2048",
+              "host": ["{{base_url}}"],
+              "path": ["kas", "v2", "kas_public_key"],
+              "query": [
+                {
+                  "key": "algorithm",
+                  "value": "rsa:2048"
+                }
+              ]
+            },
+            "description": "Deprecated: Use POST /kas/v2/kas_public_key instead.\n\nRetrieve KAS public key via GET request."
+          },
+          "response": []
+        },
+        {
+          "name": "LegacyPublicKey",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"algorithm\": \"rsa:2048\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/kas/kas_public_key",
+              "host": ["{{base_url}}"],
+              "path": ["kas", "kas_public_key"]
+            },
+            "description": "Legacy endpoint for retrieving KAS public key.\n\n**Deprecated:** Use /kas/v2/kas_public_key (POST) for new implementations."
+          },
+          "response": []
+        }
+      ],
+      "description": "KAS Service - Key Access Server for encryption key management and rewrapping"
+    },
+    {
+      "name": "Wellknown Service",
+      "item": [
+        {
+          "name": "GetWellKnownConfiguration",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/.well-known/configuration",
+              "host": ["{{base_url}}"],
+              "path": [".well-known", "configuration"]
+            },
+            "description": "Retrieve platform configuration and service discovery information.\n\n**Returns:**\n- Available services and endpoints\n- Platform version information\n- Feature flags and capabilities\n- OAuth/OIDC configuration\n- Public keys and certificates\n\n**Use Cases:**\n- Service discovery\n- Client auto-configuration\n- Version compatibility checking"
+          },
+          "response": []
+        }
+      ],
+      "description": "Wellknown Service - Platform configuration and service discovery"
+    },
+    {
+      "name": "Authorization Service",
+      "item": [
+        {
+          "name": "GetDecisions",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision_requests\": [\n    {\n      \"actions\": [\n        {\n          \"standard\": \"STANDARD_ACTION_DECRYPT\"\n        }\n      ],\n      \"entity_chain\": [\n        {\n          \"id\": \"user@example.com\",\n          \"entity_attributes\": [\n            {\n              \"attribute\": \"https://example.com/attr/classification/attr/SecurityLevel/value/Secret\"\n            }\n          ]\n        }\n      ],\n      \"resource_attributes\": [\n        {\n          \"attribute_value_fqns\": [\n            \"https://example.com/attr/classification/attr/SecurityLevel/value/Secret\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/authorization.AuthorizationService/GetDecisions",
+              "host": ["{{base_url}}"],
+              "path": ["authorization.AuthorizationService", "GetDecisions"]
+            },
+            "description": "Request authorization decisions for specific actions on resources.\n\n**Decision Request:**\n- **actions**: What action is being requested (DECRYPT, TRANSMIT, etc.)\n- **entity_chain**: User/entity making the request with their attributes\n- **resource_attributes**: Attributes of the resource being accessed\n\n**Response:**\n- PERMIT: Action is allowed\n- DENY: Action is denied\n- INDETERMINATE: Unable to make decision\n\n**Use Cases:**\n- Real-time access control decisions\n- Policy enforcement at runtime\n- Audit and compliance logging"
+          },
+          "response": []
+        },
+        {
+          "name": "GetDecisions - Multiple Actions",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision_requests\": [\n    {\n      \"actions\": [\n        {\n          \"standard\": \"STANDARD_ACTION_DECRYPT\"\n        },\n        {\n          \"standard\": \"STANDARD_ACTION_TRANSMIT\"\n        }\n      ],\n      \"entity_chain\": [\n        {\n          \"id\": \"admin@example.com\",\n          \"entity_attributes\": [\n            {\n              \"attribute\": \"https://example.com/attr/classification/attr/SecurityLevel/value/TopSecret\"\n            }\n          ]\n        }\n      ],\n      \"resource_attributes\": [\n        {\n          \"attribute_value_fqns\": [\n            \"https://example.com/attr/classification/attr/SecurityLevel/value/Secret\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/authorization.AuthorizationService/GetDecisions",
+              "host": ["{{base_url}}"],
+              "path": ["authorization.AuthorizationService", "GetDecisions"]
+            },
+            "description": "Request multiple authorization decisions in a single call.\n\nChecks if user can both DECRYPT and TRANSMIT the resource."
+          },
+          "response": []
+        },
+        {
+          "name": "GetEntitlements",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entities\": [\n    {\n      \"id\": \"user@example.com\",\n      \"entity_attributes\": [\n        {\n          \"attribute\": \"https://example.com/attr/classification/attr/SecurityLevel/value/Secret\"\n        }\n      ]\n    }\n  ],\n  \"scope\": {\n    \"attribute_value_fqns\": [\n      \"https://example.com/attr/classification/attr/SecurityLevel/value/Secret\",\n      \"https://example.com/attr/classification/attr/SecurityLevel/value/Confidential\"\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/authorization.AuthorizationService/GetEntitlements",
+              "host": ["{{base_url}}"],
+              "path": ["authorization.AuthorizationService", "GetEntitlements"]
+            },
+            "description": "Retrieve all entitlements for a user or entity.\n\n**Returns:**\n- All attribute values the entity can access\n- Actions permitted for each attribute\n- Effective permissions based on subject mappings\n\n**Scope:**\nOptionally filter entitlements to specific attributes.\n\n**Use Cases:**\n- Display available data to users\n- Client-side access control\n- User permission auditing"
+          },
+          "response": []
+        }
+      ],
+      "description": "Authorization Service - Real-time authorization decisions and entitlement queries"
+    },
+    {
+      "name": "Shared Service",
+      "item": [
+        {
+          "name": "GetMyEntitlements (v1)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/shared.v1.SharedService/GetMyEntitlements",
+              "host": ["{{base_url}}"],
+              "path": ["shared.v1.SharedService", "GetMyEntitlements"]
+            },
+            "description": "Get entitlements for the current authenticated user (v1).\n\n**Returns:**\nAll attribute values and actions the current user is entitled to access based on their authentication token.\n\n**Use Cases:**\n- Display user's access level\n- Client-side permission checks\n- UI personalization based on access"
+          },
+          "response": []
+        },
+        {
+          "name": "GetMyEntitlements (v2)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/shared.v2.SharedService/GetMyEntitlements",
+              "host": ["{{base_url}}"],
+              "path": ["shared.v2.SharedService", "GetMyEntitlements"]
+            },
+            "description": "Get entitlements for the current authenticated user (v2).\n\n**Improvements over v1:**\n- Enhanced entitlement details\n- Better performance\n- Additional metadata"
+          },
+          "response": []
+        },
+        {
+          "name": "TransformToICTDF",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ztdf\": \"<base64-encoded-ztdf>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/shared.SharedService/TransformToICTDF",
+              "host": ["{{base_url}}"],
+              "path": ["shared.SharedService", "TransformToICTDF"]
+            },
+            "description": "Transform ZTDF format to ICTDF format.\n\n**ZTDF:** Zero Trust TDF format\n**ICTDF:** Interoperable Cryptographic TDF format\n\nThis transformation enables compatibility between different TDF implementations and versions."
+          },
+          "response": []
+        },
+        {
+          "name": "TransformToZTDF",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ictdf\": \"<base64-encoded-ictdf>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/shared.SharedService/TransformToZTDF",
+              "host": ["{{base_url}}"],
+              "path": ["shared.SharedService", "TransformToZTDF"]
+            },
+            "description": "Transform ICTDF format to ZTDF format.\n\n**ICTDF:** Interoperable Cryptographic TDF format\n**ZTDF:** Zero Trust TDF format\n\nThis transformation enables modern zero-trust capabilities and enhanced security features."
+          },
+          "response": []
+        }
+      ],
+      "description": "Shared Service - User entitlements and TDF format transformations"
     },
     {
       "name": "Tagging PDP Service",
