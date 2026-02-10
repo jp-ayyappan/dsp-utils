@@ -1,24 +1,63 @@
 {
   "info": {
     "name": "Virtru DSP gRPC APIs",
-    "description": "Comprehensive collection for interacting with Virtru Data Security Platform gRPC endpoints.\n\n**Services Included:**\n- Tagging PDP Service (v2)\n- Policy Artifact Service (v1)\n- NanoTDF Rewrap Service (v1)\n\n**Setup:**\n1. Configure environment variables (see Variables tab)\n2. Ensure your gRPC server is running\n3. Authentication token should be set in Authorization header",
+    "description": "Comprehensive collection for interacting with Virtru Data Security Platform gRPC endpoints.\n\n**Services Included:**\n- Tagging PDP Service (v2)\n- Policy Artifact Service (v1)\n- NanoTDF Rewrap Service (v1)\n\n**Authentication:**\n1. Configure Keycloak variables in the Variables tab\n2. Run 'Get Access Token' request to authenticate\n3. Token is automatically saved and used for all subsequent requests\n4. Token auto-refresh on expiry",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "base_url",
       "value": "localhost:8080",
-      "type": "string"
+      "type": "string",
+      "description": "gRPC server address (host:port)"
+    },
+    {
+      "key": "keycloak_url",
+      "value": "https://keycloak-ohalo.dsp-prod-green.virtru.com",
+      "type": "string",
+      "description": "Keycloak base URL"
+    },
+    {
+      "key": "keycloak_realm",
+      "value": "dsp-ohalo",
+      "type": "string",
+      "description": "Keycloak realm name"
+    },
+    {
+      "key": "keycloak_client_id",
+      "value": "dsp-outlook-auth",
+      "type": "string",
+      "description": "OAuth client ID"
+    },
+    {
+      "key": "keycloak_username",
+      "value": "",
+      "type": "string",
+      "description": "Your username"
+    },
+    {
+      "key": "keycloak_password",
+      "value": "",
+      "type": "string",
+      "description": "Your password"
     },
     {
       "key": "auth_token",
       "value": "",
-      "type": "string"
+      "type": "string",
+      "description": "Access token (auto-populated)"
+    },
+    {
+      "key": "token_expires_at",
+      "value": "0",
+      "type": "string",
+      "description": "Token expiry timestamp (auto-populated)"
     },
     {
       "key": "use_tls",
-      "value": "false",
-      "type": "boolean"
+      "value": "true",
+      "type": "boolean",
+      "description": "Use TLS for gRPC connections"
     }
   ],
   "auth": {
@@ -31,7 +70,288 @@
       }
     ]
   },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-refresh token if expired",
+          "const tokenExpiresAt = parseInt(pm.collectionVariables.get('token_expires_at') || '0');",
+          "const now = Date.now();",
+          "",
+          "if (now >= tokenExpiresAt) {",
+          "    console.log('Token expired or missing, refreshing...');",
+          "    ",
+          "    const keycloakUrl = pm.collectionVariables.get('keycloak_url');",
+          "    const realm = pm.collectionVariables.get('keycloak_realm');",
+          "    const clientId = pm.collectionVariables.get('keycloak_client_id');",
+          "    const username = pm.collectionVariables.get('keycloak_username');",
+          "    const password = pm.collectionVariables.get('keycloak_password');",
+          "    ",
+          "    if (!username || !password) {",
+          "        console.log('Username or password not set, skipping auto-refresh');",
+          "        return;",
+          "    }",
+          "    ",
+          "    const tokenUrl = `${keycloakUrl}/realms/${realm}/protocol/openid-connect/token`;",
+          "    ",
+          "    pm.sendRequest({",
+          "        url: tokenUrl,",
+          "        method: 'POST',",
+          "        header: {",
+          "            'Content-Type': 'application/x-www-form-urlencoded'",
+          "        },",
+          "        body: {",
+          "            mode: 'urlencoded',",
+          "            urlencoded: [",
+          "                { key: 'grant_type', value: 'password' },",
+          "                { key: 'client_id', value: clientId },",
+          "                { key: 'username', value: username },",
+          "                { key: 'password', value: password }",
+          "            ]",
+          "        }",
+          "    }, (err, response) => {",
+          "        if (err) {",
+          "            console.error('Failed to refresh token:', err);",
+          "            return;",
+          "        }",
+          "        ",
+          "        const jsonResponse = response.json();",
+          "        if (jsonResponse.access_token) {",
+          "            pm.collectionVariables.set('auth_token', jsonResponse.access_token);",
+          "            ",
+          "            const expiresIn = jsonResponse.expires_in || 300;",
+          "            const expiresAt = Date.now() + (expiresIn * 1000) - 60000; // 1 min buffer",
+          "            pm.collectionVariables.set('token_expires_at', expiresAt.toString());",
+          "            ",
+          "            console.log('Token refreshed successfully');",
+          "        }",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ],
   "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Get Access Token (Password Grant)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Save access token to collection variable",
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "if (jsonData.access_token) {",
+                  "    pm.collectionVariables.set('auth_token', jsonData.access_token);",
+                  "    ",
+                  "    // Calculate expiry time",
+                  "    const expiresIn = jsonData.expires_in || 300;",
+                  "    const expiresAt = Date.now() + (expiresIn * 1000) - 60000; // 1 min buffer",
+                  "    pm.collectionVariables.set('token_expires_at', expiresAt.toString());",
+                  "    ",
+                  "    console.log('Access token saved successfully');",
+                  "    console.log('Token expires in:', expiresIn, 'seconds');",
+                  "    ",
+                  "    pm.test('Token obtained successfully', function () {",
+                  "        pm.expect(jsonData.access_token).to.exist;",
+                  "    });",
+                  "} else {",
+                  "    console.error('No access token in response');",
+                  "    pm.test('Token request failed', function () {",
+                  "        pm.expect.fail('No access_token in response');",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{keycloak_client_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "username",
+                  "value": "{{keycloak_username}}",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "{{keycloak_password}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{keycloak_url}}/realms/{{keycloak_realm}}/protocol/openid-connect/token",
+              "host": ["{{keycloak_url}}"],
+              "path": ["realms", "{{keycloak_realm}}", "protocol", "openid-connect", "token"]
+            },
+            "description": "Get OAuth access token using password grant.\n\n**Required Variables:**\n- `keycloak_url`: Keycloak base URL\n- `keycloak_realm`: Realm name\n- `keycloak_client_id`: OAuth client ID\n- `keycloak_username`: Your username\n- `keycloak_password`: Your password\n\n**Auto-saves token** to `auth_token` variable for use in all requests."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Access Token (Client Credentials)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "if (jsonData.access_token) {",
+                  "    pm.collectionVariables.set('auth_token', jsonData.access_token);",
+                  "    ",
+                  "    const expiresIn = jsonData.expires_in || 300;",
+                  "    const expiresAt = Date.now() + (expiresIn * 1000) - 60000;",
+                  "    pm.collectionVariables.set('token_expires_at', expiresAt.toString());",
+                  "    ",
+                  "    console.log('Client credentials token saved');",
+                  "    pm.test('Token obtained', () => pm.expect(jsonData.access_token).to.exist);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "client_credentials",
+                  "type": "text"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{keycloak_client_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{keycloak_client_secret}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{keycloak_url}}/realms/{{keycloak_realm}}/protocol/openid-connect/token",
+              "host": ["{{keycloak_url}}"],
+              "path": ["realms", "{{keycloak_realm}}", "protocol", "openid-connect", "token"]
+            },
+            "description": "Get OAuth access token using client credentials grant.\n\n**Use this for:**\n- Service accounts\n- Machine-to-machine authentication\n\n**Required Variables:**\n- `keycloak_client_id`: Service account client ID\n- `keycloak_client_secret`: Client secret"
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "if (jsonData.access_token) {",
+                  "    pm.collectionVariables.set('auth_token', jsonData.access_token);",
+                  "    ",
+                  "    if (jsonData.refresh_token) {",
+                  "        pm.collectionVariables.set('refresh_token', jsonData.refresh_token);",
+                  "    }",
+                  "    ",
+                  "    const expiresIn = jsonData.expires_in || 300;",
+                  "    const expiresAt = Date.now() + (expiresIn * 1000) - 60000;",
+                  "    pm.collectionVariables.set('token_expires_at', expiresAt.toString());",
+                  "    ",
+                  "    console.log('Token refreshed');",
+                  "    pm.test('Token refreshed', () => pm.expect(jsonData.access_token).to.exist);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "refresh_token",
+                  "type": "text"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{keycloak_client_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "refresh_token",
+                  "value": "{{refresh_token}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{keycloak_url}}/realms/{{keycloak_realm}}/protocol/openid-connect/token",
+              "host": ["{{keycloak_url}}"],
+              "path": ["realms", "{{keycloak_realm}}", "protocol", "openid-connect", "token"]
+            },
+            "description": "Refresh an existing access token.\n\n**Required:**\n- Previous token request must have returned a refresh_token\n- Refresh token must not be expired"
+          },
+          "response": []
+        }
+      ],
+      "description": "Authentication requests for obtaining OAuth tokens from Keycloak.\n\n**Quick Start:**\n1. Set credentials in Variables tab\n2. Run 'Get Access Token (Password Grant)'\n3. Token is auto-saved and used for all API calls\n\n**Auto-Refresh:**\nThe collection automatically refreshes expired tokens before each request."
+    },
     {
       "name": "Tagging PDP Service",
       "item": [
@@ -56,10 +376,7 @@
             },
             "description": "Process content items through the PDP to produce tags.\n\n**Request Fields:**\n- `items`: Array of ContentItem objects\n- `type`: Optional top-level content type\n- `options`: TagRequestOptions with processing mode\n\n**Modes:**\n- ALL: Process all stages\n- TAG_EXTRACT: Content extraction + tag extraction\n- TAG_EXTRACT_AND_PROCESS: Extraction + processing\n- EXTRACT_GENERATE_TOKENS: Generate encrypted tokens"
           },
-          "response": [],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          }
+          "response": []
         },
         {
           "name": "Tag Per Content Item",
@@ -80,12 +397,9 @@
               "host": ["{{base_url}}"],
               "path": ["tagging.pdp.v2.TaggingPDPService", "TagPerContentItem"]
             },
-            "description": "Process content items and return tags per individual content item plus cross-content tags.\n\n**Response includes:**\n- `cross_content_tags`: Tags rolled up across all content\n- `per_content_tags`: Tags specific to each content item\n- `events`: Processing events/errors"
+            "description": "Process content items and return tags per individual content item plus cross-content tags."
           },
-          "response": [],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          }
+          "response": []
         },
         {
           "name": "Process Tags",
@@ -106,41 +420,12 @@
               "host": ["{{base_url}}"],
               "path": ["tagging.pdp.v2.TaggingPDPService", "ProcessTags"]
             },
-            "description": "Process a series of tags through the PDP.\n\n**Options:**\n- `mode`: ALL or PROCESS\n- `assertion_options`: Generate assertions (e.g., STANAG 4774)\n\n**Use Cases:**\n- Convert data attribute tags to assertions\n- Process third-party tags\n- Generate encrypted search tokens"
+            "description": "Process tags to generate assertions or encrypted search tokens."
           },
-          "response": [],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          }
-        },
-        {
-          "name": "Tag with Binary Content",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"items\": [\n    {\n      \"desc\": {\n        \"type\": \"application.pdf\",\n        \"id\": \"doc-1\",\n        \"name\": \"confidential.pdf\",\n        \"generateTokens\": true\n      },\n      \"binaryContent\": \"<base64-encoded-pdf-content>\"\n    }\n  ],\n  \"options\": {\n    \"mode\": \"EXTRACT_GENERATE_TOKENS\"\n  }\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/tagging.pdp.v2.TaggingPDPService/Tag",
-              "host": ["{{base_url}}"],
-              "path": ["tagging.pdp.v2.TaggingPDPService", "Tag"]
-            },
-            "description": "Tag binary content (PDF, Office docs, images, etc.)\n\n**Binary Content Handling:**\n- Use `binaryContent` field with base64-encoded data\n- Set `generateTokens: true` to generate encrypted search tokens\n- Content type affects extraction methods"
-          },
-          "response": [],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          }
+          "response": []
         }
       ],
-      "description": "Tagging PDP Service provides content analysis and tag generation capabilities.\n\n**Key Features:**\n- Content extraction from multiple formats\n- Tag generation based on rules and ML\n- Assertion generation (STANAG, custom formats)\n- Encrypted search token generation\n- Provenance tracking"
+      "description": "Tagging PDP Service - Content analysis and tag generation"
     },
     {
       "name": "Policy Artifact Service",
@@ -164,38 +449,9 @@
               "host": ["{{base_url}}"],
               "path": ["policyimportexport.v1.PolicyArtifactService", "CreateImportArtifacts"]
             },
-            "description": "Import policy artifacts in unbundled YAML format.\n\n**Policy Format:**\nBase64-encoded YAML containing:\n- Namespaces\n- Attributes\n- Values\n- Subject mappings\n- Resource mappings"
+            "description": "Import policy artifacts in unbundled YAML format."
           },
-          "response": [],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          }
-        },
-        {
-          "name": "Import Policy (OCI Bundle)",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"policy_oci_bundle\": {\n    \"oci_blob\": \"<signed-oci-artifact-blob>\",\n    \"no_verify_signature\": false\n  }\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/policyimportexport.v1.PolicyArtifactService/CreateImportArtifacts",
-              "host": ["{{base_url}}"],
-              "path": ["policyimportexport.v1.PolicyArtifactService", "CreateImportArtifacts"]
-            },
-            "description": "Import policy artifacts as signed OCI bundles.\n\n**Security:**\n- Signature verification by default\n- Requires trusted artifact provider\n- Set `no_verify_signature: true` only for testing"
-          },
-          "response": [],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          }
+          "response": []
         },
         {
           "name": "Export Policy (Unbundled)",
@@ -216,67 +472,12 @@
               "host": ["{{base_url}}"],
               "path": ["policyimportexport.v1.PolicyArtifactService", "CreateExportArtifacts"]
             },
-            "description": "Export policy artifacts for a specific namespace in YAML format.\n\n**Options:**\n- `namespace`: Namespace to export\n- `no_bundle`: Export as unbundled YAML (true) or OCI artifact (false)\n- `with_obligations`: Include obligations in export (default: true)"
+            "description": "Export policy artifacts for a specific namespace."
           },
-          "response": [],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          }
-        },
-        {
-          "name": "Export Policy (OCI Bundle)",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"namespace\": \"https://example.com/attr\",\n  \"no_bundle\": false,\n  \"with_obligations\": true\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/policyimportexport.v1.PolicyArtifactService/CreateExportArtifacts",
-              "host": ["{{base_url}}"],
-              "path": ["policyimportexport.v1.PolicyArtifactService", "CreateExportArtifacts"]
-            },
-            "description": "Export policy artifacts as an OCI bundle.\n\n**Returns:**\n- JSON manifest\n- OCI-layout tar archive\n\nReady for signing and distribution via OCI registries."
-          },
-          "response": [],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          }
-        },
-        {
-          "name": "Create Trusted Artifact Provider",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"artifact_provider\": {\n    \"public_key\": \"<base64-encoded-public-key>\",\n    \"permitted_namespaces\": [\n      \"https://example.com/attr\",\n      \"https://virtru.com/attr\"\n    ]\n  }\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/policyimportexport.v1.PolicyArtifactService/CreateTrustedArtifactProvider",
-              "host": ["{{base_url}}"],
-              "path": ["policyimportexport.v1.PolicyArtifactService", "CreateTrustedArtifactProvider"]
-            },
-            "description": "Register a trusted policy artifact provider for signature verification.\n\n**Required:**\n- Public key for signature verification\n- Permitted namespaces the provider can publish\n\n**Use Case:**\nAllow external policy providers to publish signed policy artifacts."
-          },
-          "response": [],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          }
+          "response": []
         }
       ],
-      "description": "Policy Artifact Service manages policy import/export in various formats.\n\n**Formats:**\n- Unbundled YAML\n- OCI artifacts (signed)\n\n**Features:**\n- Signature verification\n- Trusted provider management\n- Namespace isolation"
+      "description": "Policy Artifact Service - Policy import/export"
     },
     {
       "name": "NanoTDF Rewrap Service",
@@ -300,47 +501,12 @@
               "host": ["{{base_url}}"],
               "path": ["kas.nanotdf.v1.NanoTDFRewrapService", "Rewrap"]
             },
-            "description": "Rewrap NanoTDF headers to obtain KAS-wrapped keys.\n\n**Signed Request Token (SRT) must contain:**\n```json\n{\n  \"requestBody\": {\n    \"client_public_key\": \"<x25519-public-key>\",\n    \"items\": [\n      {\n        \"id\": \"item-1\",\n        \"header\": \"<base64-nanotdf-header>\"\n      }\n    ]\n  }\n}\n```\n\n**Response includes:**\n- Session public key for key agreement\n- Per-item rewrap results with KAS-wrapped keys\n- Status: \"permit\" or \"fail\""
+            "description": "Rewrap NanoTDF headers to obtain KAS-wrapped keys."
           },
-          "response": [],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          }
+          "response": []
         }
       ],
-      "description": "NanoTDF Rewrap Service handles key management for NanoTDF format.\n\n**Features:**\n- KAS-based key rewrapping\n- Support for batch rewrap operations\n- X25519 key agreement\n- Per-item status tracking"
-    },
-    {
-      "name": "Health Check",
-      "item": [
-        {
-          "name": "gRPC Health Check",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"service\": \"\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/grpc.health.v1.Health/Check",
-              "host": ["{{base_url}}"],
-              "path": ["grpc.health.v1.Health", "Check"]
-            },
-            "description": "Standard gRPC health check.\n\n**Empty service name checks overall server health.**\n\nResponses:\n- SERVING: Service is healthy\n- NOT_SERVING: Service is down\n- UNKNOWN: Status unknown"
-          },
-          "response": [],
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          }
-        }
-      ],
-      "description": "Standard gRPC health check endpoints"
+      "description": "NanoTDF Rewrap Service - Key management for NanoTDF"
     }
   ]
 }
