@@ -67,39 +67,56 @@ Key management for NanoTDF format.
 
 The collection uses these variables:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `base_url` | gRPC server address (**include protocol**) | `http://localhost:8080` or `https://ohalo.platform.partner.dsp-prod-green.virtru.com:443` |
-| `auth_token` | Bearer token for authentication | Your OAuth token |
-| `use_tls` | Whether to use TLS | `true` for production, `false` for local |
+| Variable | Description | Example | Required |
+|----------|-------------|---------|----------|
+| `base_url` | gRPC server address (**include protocol**) | `https://ohalo.platform.partner.dsp-prod-green.virtru.com:443` | ✅ Yes |
+| `keycloak_url` | Keycloak base URL | `https://keycloak-ohalo.dsp-prod-green.virtru.com` | ✅ Yes |
+| `keycloak_realm` | Keycloak realm name | `dsp-ohalo` | ✅ Yes |
+| `keycloak_client_id` | OAuth public client ID | `dsp-outlook-auth` | ✅ Yes |
+| `keycloak_username` | Your username | `your-username` | ✅ Yes |
+| `keycloak_password` | Your password | `your-password` | ✅ Yes |
+| `auth_token` | Access token (auto-populated) | *Automatically set by "Get Access Token"* | ⚙️ Auto |
+| `refresh_token` | Refresh token (auto-populated) | *Automatically set by "Get Access Token"* | ⚙️ Auto |
+| `token_expires_at` | Token expiry timestamp (auto-populated) | *Automatically set by "Get Access Token"* | ⚙️ Auto |
 
-**⚠️ Important:** The `base_url` must include the protocol (`http://` or `https://`). Without it, Postman will default to `http://` which will cause connection errors on TLS endpoints.
+**⚠️ Important:**
+- The `base_url` must include the protocol (`http://` or `https://`). Without it, Postman will default to `http://` which will cause connection errors on TLS endpoints.
+- Only set the first 6 variables manually. The auth tokens are automatically populated when you run "Get Access Token".
 
 **Set Variables:**
 1. Click on the collection
 2. Go to "Variables" tab
-3. Set "Current Value" for each variable
+3. Set "Current Value" for each required variable (first 6 rows)
+4. Leave auth_token, refresh_token, and token_expires_at empty (they auto-populate)
 
 ### 3. Authentication
 
-The collection uses Bearer token authentication by default.
+The collection includes built-in Keycloak OAuth authentication with automatic token refresh.
 
-**Get an OAuth Token:**
-```bash
-# Using your runGRPCUI.sh script
-cd ~/dev/personal/dsp-utils/grpcui
-./runGRPCUI.sh local-dsp.virtru.com --insecure -a 8443 -p 8080
+**Step 1: Configure Keycloak Variables** (see step 2 above)
 
-# The script fetches a token - you can extract it for Postman use
-```
+**Step 2: Get Access Token**
+1. In the collection, navigate to **Authentication** folder
+2. Run the **"Get Access Token (Password Grant)"** request
+3. The response will automatically populate:
+   - `auth_token` - Your access token
+   - `refresh_token` - Token for automatic refresh
+   - `token_expires_at` - Expiry timestamp
 
-**Or use the Keycloak admin tool:**
-```bash
-cd ~/dev/personal/dsp-utils/keycloak
-source venv/bin/activate
+**Step 3: Use the Collection**
+- All subsequent requests will automatically use the `auth_token`
+- The collection has a **pre-request script** that automatically refreshes expired tokens
+- You don't need to manually refresh - it happens automatically!
 
-# Get token programmatically (you'll need to add a get-token command)
-```
+**Token Auto-Refresh:**
+The collection monitors token expiry and automatically requests a new token when needed. If your token expires, the pre-request script will:
+1. Check if `token_expires_at` has passed
+2. Use the `refresh_token` to get a new access token
+3. Update `auth_token` and `token_expires_at` automatically
+4. Proceed with your request
+
+**Manual Refresh (if needed):**
+If you need to manually refresh your token, run **"Refresh Access Token"** in the Authentication folder.
 
 ## Usage Examples
 
