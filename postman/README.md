@@ -12,10 +12,21 @@ Comprehensive Postman collection for interacting with Virtru Data Security Platf
 3. Select `DSP-gRPC-APIs.postman_collection.json`
 4. Click "Import"
 
-**Option B: Import via URL**
+**Option B: Import directly from GitHub**
+1. Open Postman
+2. Click "Import" button
+3. Select "Link" tab
+4. Paste this URL:
+   ```
+   https://raw.githubusercontent.com/jp-ayyappan/dsp-utils/main/postman/DSP-gRPC-APIs.postman_collection.json
+   ```
+5. Click "Continue" → "Import"
+
+**Option C: Clone the repository**
 ```bash
-# If you've pushed to GitHub
-# Collections → Import → Link → Paste GitHub raw URL
+git clone https://github.com/jp-ayyappan/dsp-utils.git
+cd dsp-utils/postman
+# Then use Option A to import the local file
 ```
 
 ### 2. Configure Variables
