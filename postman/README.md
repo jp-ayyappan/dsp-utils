@@ -1,53 +1,8 @@
 # Virtru DSP gRPC API Postman Collection
 
-Comprehensive Postman collection for interacting with Virtru Data Security Platform gRPC endpoints.
+Comprehensive Postman collection for interacting with Virtru Data Security Platform gRPC endpoints via gRPC-gateway.
 
-## Services Included
-
-### 1. Tagging PDP Service (v2)
-Content analysis and tag generation service.
-
-**Endpoints:**
-- `Tag` - Process content items to produce tags
-- `TagPerContentItem` - Get tags per individual content item
-- `TagStream` - Stream content for tagging (not in REST format)
-- `ProcessTags` - Process existing tags
-
-**Features:**
-- Content extraction from multiple formats (text, binary, URLs)
-- Data attribute tag generation
-- Assertion generation (STANAG 4774, custom formats)
-- Encrypted search token generation
-- Provenance tracking
-
-### 2. Policy Artifact Service (v1)
-Policy import/export and artifact management.
-
-**Endpoints:**
-- `CreateImportArtifacts` - Import policy (YAML or OCI format)
-- `CreateExportArtifacts` - Export policy (YAML or OCI format)
-- `CreateTrustedArtifactProvider` - Register trusted providers
-
-**Features:**
-- Unbundled YAML format support
-- OCI artifact bundle support
-- Signature verification
-- Trusted provider management
-- Namespace isolation
-
-### 3. NanoTDF Rewrap Service (v1)
-Key management for NanoTDF format.
-
-**Endpoints:**
-- `Rewrap` - Rewrap NanoTDF headers to get KAS-wrapped keys
-
-**Features:**
-- Batch rewrap operations
-- X25519 key agreement
-- Per-item status tracking
-- Signed Request Token (SRT) authentication
-
-## Setup Instructions
+## Quick Start
 
 ### 1. Import Collection
 
@@ -63,9 +18,9 @@ Key management for NanoTDF format.
 # Collections → Import → Link → Paste GitHub raw URL
 ```
 
-### 2. Configure Environment Variables
+### 2. Configure Variables
 
-The collection uses these variables:
+Click on the collection → **Variables** tab and set these values:
 
 | Variable | Description | Example | Required |
 |----------|-------------|---------|----------|
@@ -75,215 +30,113 @@ The collection uses these variables:
 | `keycloak_client_id` | OAuth public client ID | `dsp-outlook-auth` | ✅ Yes |
 | `keycloak_username` | Your username | `your-username` | ✅ Yes |
 | `keycloak_password` | Your password | `your-password` | ✅ Yes |
-| `auth_token` | Access token (auto-populated) | *Automatically set by "Get Access Token"* | ⚙️ Auto |
-| `refresh_token` | Refresh token (auto-populated) | *Automatically set by "Get Access Token"* | ⚙️ Auto |
-| `token_expires_at` | Token expiry timestamp (auto-populated) | *Automatically set by "Get Access Token"* | ⚙️ Auto |
+| `auth_token` | Access token (auto-populated) | *Auto-set by "Get Access Token"* | ⚙️ Auto |
+| `refresh_token` | Refresh token (auto-populated) | *Auto-set by "Get Access Token"* | ⚙️ Auto |
+| `token_expires_at` | Token expiry timestamp (auto-populated) | *Auto-set by "Get Access Token"* | ⚙️ Auto |
 
 **⚠️ Important:**
-- The `base_url` must include the protocol (`http://` or `https://`). Without it, Postman will default to `http://` which will cause connection errors on TLS endpoints.
-- Only set the first 6 variables manually. The auth tokens are automatically populated when you run "Get Access Token".
+- The `base_url` **must include the protocol** (`http://` or `https://`). Without it, Postman defaults to `http://` which causes connection errors.
+- Only set the first 6 variables manually. The auth tokens auto-populate when you authenticate.
 
-**Set Variables:**
-1. Click on the collection
-2. Go to "Variables" tab
-3. Set "Current Value" for each required variable (first 6 rows)
-4. Leave auth_token, refresh_token, and token_expires_at empty (they auto-populate)
+### 3. Authenticate
 
-### 3. Authentication
+1. Navigate to **Authentication** folder in the collection
+2. Run **"Get Access Token (Password Grant)"**
+3. Verify the response populates: `auth_token`, `refresh_token`, `token_expires_at`
 
-The collection includes built-in Keycloak OAuth authentication with automatic token refresh.
+**That's it!** All subsequent requests will automatically:
+- Use your `auth_token` for authentication
+- Refresh the token when it expires (via pre-request script)
+- No manual token management needed
 
-**Step 1: Configure Keycloak Variables** (see step 2 above)
+### 4. Make Your First Request
 
-**Step 2: Get Access Token**
-1. In the collection, navigate to **Authentication** folder
-2. Run the **"Get Access Token (Password Grant)"** request
-3. The response will automatically populate:
-   - `auth_token` - Your access token
-   - `refresh_token` - Token for automatic refresh
-   - `token_expires_at` - Expiry timestamp
-
-**Step 3: Use the Collection**
-- All subsequent requests will automatically use the `auth_token`
-- The collection has a **pre-request script** that automatically refreshes expired tokens
-- You don't need to manually refresh - it happens automatically!
-
-**Token Auto-Refresh:**
-The collection monitors token expiry and automatically requests a new token when needed. If your token expires, the pre-request script will:
-1. Check if `token_expires_at` has passed
-2. Use the `refresh_token` to get a new access token
-3. Update `auth_token` and `token_expires_at` automatically
-4. Proceed with your request
-
-**Manual Refresh (if needed):**
-If you need to manually refresh your token, run **"Refresh Access Token"** in the Authentication folder.
+Try **Policy Service → Namespaces → List Namespaces** to verify everything works!
 
 ## Usage Examples
 
-### Example 1: Tag Text Content
+### Example 1: List Policy Namespaces
 
-**Request:** Tagging PDP Service → Tag Content Items
+**Request:** Policy Service → Namespaces → List Namespaces
 
 ```json
 {
-  "items": [
-    {
-      "desc": {
-        "type": "text.plain",
-        "id": "doc-1",
-        "name": "sample.txt"
-      },
-      "text": "This is a SECRET document about Project Alpha."
-    }
-  ],
-  "options": {
-    "mode": "TAG_EXTRACT_AND_PROCESS"
-  }
+  "state": "ACTIVE"
 }
 ```
 
 **Response:**
 ```json
 {
-  "tags": [
+  "namespaces": [
     {
-      "metadata": {
-        "id": "tag-1",
-        "provenance": { ... }
-      },
-      "data_attribute": {
-        "fqn": "https://example.com/attr/Classification/Secret"
-      }
+      "id": "namespace-uuid",
+      "name": "https://example.com/attr",
+      "fqn": "https://example.com/attr"
     }
-  ],
-  "events": []
+  ]
 }
 ```
 
-### Example 2: Export Policy
+### Example 2: Create an Attribute
 
-**Request:** Policy Artifact Service → Export Policy (Unbundled)
+**Request:** Policy Service → Attributes → Create Attribute
 
 ```json
 {
-  "namespace": "https://example.com/attr",
-  "no_bundle": true,
-  "with_obligations": true
+  "namespace_id": "namespace-uuid",
+  "name": "Classification",
+  "rule": "HIERARCHY",
+  "values": ["Unclassified", "Confidential", "Secret", "TopSecret"]
 }
 ```
 
-**Response:**
-```json
-{
-  "policy_unbundled": {
-    "policy": "<base64-encoded-yaml>"
-  }
-}
-```
+### Example 3: Get Authorization Decisions
 
-Decode the base64 to get human-readable YAML policy.
-
-### Example 3: Process Existing Tags
-
-**Request:** Tagging PDP Service → Process Tags
+**Request:** Authorization Service → Get Decisions
 
 ```json
 {
-  "tags": [
+  "decision_requests": [
     {
-      "metadata": { "id": "tag-1" },
-      "data_attribute": {
-        "fqn": "https://example.com/attr/Classification/Secret"
-      }
+      "actions": [{"standard": "STANDARD_ACTION_TRANSMIT"}],
+      "entity_chains": [{
+        "entities": [{
+          "id": "e1",
+          "entity_type": {"name": "ResourceAttributeEntity"},
+          "attribute": "https://example.com/attr/Classification/Secret"
+        }]
+      }],
+      "subject_sets": [{
+        "subject_attributes": [{
+          "attribute": "https://example.com/attr/Clearance/Secret"
+        }]
+      }]
     }
-  ],
-  "options": {
-    "mode": "PROCESS",
-    "assertion_options": [
-      {
-        "assertion_type": "stanag_4774"
-      }
-    ]
-  }
+  ]
 }
 ```
-
-Generates STANAG 4774 assertions from data attributes.
 
 ## Common Workflows
 
-### Workflow 1: Content Classification Pipeline
+### Workflow 1: Policy Setup
 
-1. **Tag Content**
-   - Use `Tag Content Items` with your document
-   - Set mode to `TAG_EXTRACT_AND_PROCESS`
+1. **Create Namespace** → Policy Service → Namespaces → Create Namespace
+2. **Create Attribute** → Policy Service → Attributes → Create Attribute
+3. **Create Values** → Policy Service → Attributes → Create Attribute Value
+4. **List Everything** → Verify your policy structure
 
-2. **Review Tags**
-   - Examine returned tags and provenance
-   - Check for any processing events/errors
+### Workflow 2: Content Classification
 
-3. **Generate Assertions**
-   - Use `Process Tags` with the returned tags
-   - Request specific assertion types (STANAG, etc.)
+1. **Tag Content** → Tagging PDP Service → Tag Content Items
+2. **Review Tags** → Check returned data attributes
+3. **Process Tags** → Generate assertions (STANAG 4774, etc.)
 
-### Workflow 2: Policy Management
+### Workflow 3: Authorization Testing
 
-1. **Export Current Policy**
-   - Use `Export Policy (Unbundled)`
-   - Decode base64 and review YAML
-
-2. **Modify Policy**
-   - Edit the YAML (add attributes, values, mappings)
-   - Base64 encode the modified YAML
-
-3. **Import Updated Policy**
-   - Use `Import Policy (Unbundled)`
-   - Verify import success
-
-### Workflow 3: NanoTDF Decryption
-
-1. **Prepare Signed Request Token**
-   - Create JWT with `requestBody` claim
-   - Include client public key and NanoTDF headers
-
-2. **Rewrap Keys**
-   - Call `Rewrap NanoTDF Headers`
-   - Receive KAS-wrapped keys
-
-3. **Decrypt Content**
-   - Use session public key for key agreement
-   - Unwrap keys and decrypt NanoTDF payload
-
-## Testing Tips
-
-### Local Development
-
-**Start DSP services:**
-```bash
-# Assuming you're using docker-compose
-cd /path/to/dsp
-docker-compose up -d
-
-# Or individual services
-./tagging-pdp-service --port 8080
-```
-
-**Configure Postman:**
-- Set `base_url` to `localhost:8080`
-- Set `use_tls` to `false`
-- Leave `auth_token` empty for local testing (if auth is disabled)
-
-### Testing with runGRPCUI.sh
-
-The `runGRPCUI.sh` script handles authentication automatically. Use it to:
-1. Verify gRPC services are accessible
-2. Explore service methods interactively
-3. Get sample requests/responses
-
-```bash
-cd ~/dev/personal/dsp-utils/grpcui
-./runGRPCUI.sh local-dsp.virtru.com --insecure -a 8443 -p 8080
-```
+1. **Setup Policy** → Create attributes and values
+2. **Create Subject Mappings** → Map users to attributes
+3. **Test Decisions** → Authorization Service → Get Decisions
 
 ## Troubleshooting
 
@@ -292,7 +145,7 @@ cd ~/dev/personal/dsp-utils/grpcui
 **Problem:** `Error: socket hang up`
 
 **Solutions:**
-- **Most common:** Missing protocol in `base_url` - add `https://` or `http://` prefix
+- **Most common:** Missing protocol in `base_url`
   - ❌ Wrong: `ohalo.platform.partner.dsp-prod-green.virtru.com:443`
   - ✅ Correct: `https://ohalo.platform.partner.dsp-prod-green.virtru.com:443`
 - Verify you have a valid `auth_token` (run "Get Access Token" first)
@@ -313,8 +166,9 @@ cd ~/dev/personal/dsp-utils/grpcui
 
 **Solutions:**
 - Verify `auth_token` is set and valid
-- Check token hasn't expired
-- Ensure user has required permissions
+- Check token hasn't expired (should auto-refresh)
+- Ensure user has required permissions in Keycloak
+- Try running "Get Access Token" again
 
 ### Invalid Request
 
@@ -331,32 +185,92 @@ cd ~/dev/personal/dsp-utils/grpcui
 **Problem:** Certificate validation errors
 
 **Solutions:**
-- Set `use_tls` to `false` for local dev
-- For production, import CA certificate
+- For local dev: Set `base_url` to `http://localhost:8080`
+- For production with self-signed certs: Disable SSL verification in Postman settings
 - Check server certificate validity
+
+## Services Included
+
+The collection includes all OpenTDF Platform and DSP-specific gRPC services:
+
+### OpenTDF Platform Services
+
+**Policy Service**
+- **Namespaces:** Create, list, get, update, deactivate namespaces
+- **Attributes:** Full CRUD for attributes and values with HIERARCHY/ALL_OF/ANY_OF rules
+- **Subject Mappings:** Map users/groups to attributes with condition sets
+- **Resource Mappings:** Auto-classification via keyword/regex patterns
+- **KAS Registry:** Manage Key Access Servers and cryptographic keys
+
+**KAS Service**
+- **Rewrap:** Rewrap encrypted keys for authorized access
+- **PublicKey:** Get KAS public keys for encryption
+
+**Authorization Service**
+- **Get Decisions:** Evaluate access control decisions
+- **Get Entitlements:** Query user entitlements
+
+**WellKnown Service**
+- **Configuration:** Service discovery and platform metadata
+
+### DSP-Specific Services
+
+**Tagging PDP Service (v2)**
+- Content analysis and tag generation
+- Data attribute extraction
+- STANAG 4774 assertion generation
+- Encrypted search token generation
+
+**Policy Artifact Service (v1)**
+- Policy import/export (YAML, OCI bundles)
+- Signature verification
+- Trusted provider management
+
+**NanoTDF Rewrap Service (v1)**
+- NanoTDF key rewrapping
+- X25519 key agreement
+- Batch operations
 
 ## Proto Files
 
 The collection is based on these proto definitions:
 
+**OpenTDF Platform:**
 ```
-data-security-platform/
-├── sdk/tagging/pdp/v2/tagging.proto
-├── sdk/policyimportexport/v1/policy_import_export.proto
-└── sdk/kas/nanotdf/v1/nanotdf_rewrap.proto
+opentdf/platform/service/
+├── policy/namespaces/namespaces.proto
+├── policy/attributes/attributes.proto
+├── policy/subjectmapping/subject_mapping.proto
+├── policy/resourcemapping/resource_mapping.proto
+├── policy/kasregistry/key_access_server_registry.proto
+├── kas/kas.proto
+├── authorization/authorization.proto
+└── wellknownconfiguration/wellknown_configuration.proto
 ```
 
-**To regenerate or modify:**
-1. Update proto files in DSP repository
-2. Regenerate collection (or update manually)
-3. Test all endpoints
+**DSP Services:**
+```
+data-security-platform/sdk/
+├── tagging/pdp/v2/tagging.proto
+├── policyimportexport/v1/policy_import_export.proto
+└── kas/nanotdf/v1/nanotdf_rewrap.proto
+```
 
 ## Additional Resources
 
-- **DSP Documentation:** [Internal link]
+### Related Tools
+
+This repository includes other utilities for DSP infrastructure management:
+
+- **[Keycloak Admin Tool](../keycloak/)** - CLI for managing Keycloak clients, users, and attributes
+- **[gRPC UI Scripts](../grpcui/)** - Interactive gRPC UI for service exploration
+
+### Documentation
+
 - **gRPC Documentation:** https://grpc.io/docs/
 - **Postman gRPC Support:** https://learning.postman.com/docs/sending-requests/grpc/grpc-request-interface/
 - **Proto3 Language Guide:** https://protobuf.dev/programming-guides/proto3/
+- **OpenTDF Platform:** https://github.com/opentdf/platform
 
 ## Contributing
 
@@ -364,14 +278,19 @@ To add new endpoints or update existing ones:
 
 1. Identify the proto file and service definition
 2. Add request to appropriate folder in collection
-3. Include example request body
-4. Document expected response
+3. Include example request body with inline comments
+4. Document expected response format
 5. Update this README with usage examples
 
 ## Version History
 
+- **v1.1** (2026-02-10) - Fixed gRPC-gateway URLs and documentation
+  - Corrected all service paths to use gRPC-gateway format
+  - Added complete variable documentation
+  - Clarified authentication flow
+  - Improved troubleshooting guide
+
 - **v1.0** (2026-02-09) - Initial collection
-  - Tagging PDP Service (v2)
-  - Policy Artifact Service (v1)
-  - NanoTDF Rewrap Service (v1)
-  - Health checks
+  - OpenTDF Platform services (Policy, KAS, Authorization, WellKnown)
+  - DSP services (Tagging PDP, Policy Artifact, NanoTDF Rewrap)
+  - Keycloak OAuth with auto-refresh
