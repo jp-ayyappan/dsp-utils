@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Virtru DSP gRPC APIs",
-    "description": "Comprehensive collection for interacting with Virtru Data Security Platform gRPC endpoints.\n\n**Services Included:**\n- Authentication (Keycloak OAuth)\n- Policy Service (Namespaces, Attributes, Values, Subject Mappings, Resource Mappings, Subject Condition Sets, Key Access Servers)\n- KAS Service (Rewrap, PublicKey)\n- Wellknown Service (Configuration)\n- Authorization Service (Decisions, DecisionsByToken, Entitlements)\n- Tagging PDP Service (v2)\n- Policy Artifact Service (v1)\n- NanoTDF Rewrap Service (v1)\n\n**Authentication:**\n1. Configure Keycloak variables in the Variables tab\n2. Run 'Get Access Token' request to authenticate\n3. Token is automatically saved and used for all subsequent requests\n4. Token auto-refresh on expiry",
+    "description": "Comprehensive collection for interacting with Virtru Data Security Platform gRPC endpoints.\n\n**Services Included:**\n- Authentication (Keycloak OAuth)\n- Policy Service (Namespaces, Attributes, Values, Subject Mappings, Resource Mappings, Subject Condition Sets, Key Access Servers)\n- KAS Service (Rewrap, PublicKey)\n- Wellknown Service (Configuration)\n- Authorization Service (Decisions, DecisionsByToken, Entitlements)\n- Entity Resolution Service (CreateEntityChainFromJwt, ResolveEntities)\n- Shared Service (GetMyEntitlements, TransformToICTDF, TransformToZTDF)\n- Tagging PDP Service (v2)\n- Policy Artifact Service (v1)\n- NanoTDF Rewrap Service (v1)\n\n**Authentication:**\n1. Configure Keycloak variables in the Variables tab\n2. Run 'Get Access Token' request to authenticate\n3. Token is automatically saved and used for all subsequent requests\n4. Token auto-refresh on expiry",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -240,8 +240,16 @@
             },
             "url": {
               "raw": "{{keycloak_url}}/realms/{{keycloak_realm}}/protocol/openid-connect/token",
-              "host": ["{{keycloak_url}}"],
-              "path": ["realms", "{{keycloak_realm}}", "protocol", "openid-connect", "token"]
+              "host": [
+                "{{keycloak_url}}"
+              ],
+              "path": [
+                "realms",
+                "{{keycloak_realm}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
             },
             "description": "Get OAuth access token using password grant.\n\n**Required Variables:**\n- `keycloak_url`: Keycloak base URL\n- `keycloak_realm`: Realm name\n- `keycloak_client_id`: OAuth client ID\n- `keycloak_username`: Your username\n- `keycloak_password`: Your password\n\n**Auto-saves token** to `auth_token` variable for use in all requests."
           },
@@ -304,8 +312,16 @@
             },
             "url": {
               "raw": "{{keycloak_url}}/realms/{{keycloak_realm}}/protocol/openid-connect/token",
-              "host": ["{{keycloak_url}}"],
-              "path": ["realms", "{{keycloak_realm}}", "protocol", "openid-connect", "token"]
+              "host": [
+                "{{keycloak_url}}"
+              ],
+              "path": [
+                "realms",
+                "{{keycloak_realm}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
             },
             "description": "Get OAuth access token using client credentials grant.\n\n**Use this for:**\n- Service accounts\n- Machine-to-machine authentication\n\n**Required Variables:**\n- `keycloak_client_id`: Service account client ID\n- `keycloak_client_secret`: Client secret"
           },
@@ -372,8 +388,16 @@
             },
             "url": {
               "raw": "{{keycloak_url}}/realms/{{keycloak_realm}}/protocol/openid-connect/token",
-              "host": ["{{keycloak_url}}"],
-              "path": ["realms", "{{keycloak_realm}}", "protocol", "openid-connect", "token"]
+              "host": [
+                "{{keycloak_url}}"
+              ],
+              "path": [
+                "realms",
+                "{{keycloak_realm}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
             },
             "description": "Refresh an existing access token.\n\n**Required:**\n- Previous token request must have returned a refresh_token\n- Refresh token must not be expired"
           },
@@ -419,8 +443,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.namespaces.NamespaceService/CreateNamespace",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.namespaces.NamespaceService", "CreateNamespace"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.namespaces.NamespaceService",
+                    "CreateNamespace"
+                  ]
                 },
                 "description": "Create a new namespace for organizing attributes.\n\n**Namespace Lifecycle Step 1/5**\n\nNamespaces are URIs that group related attributes together. Common patterns:\n- `https://example.com/attr/classification` - Security classifications\n- `https://example.com/attr/departments` - Department-based attributes\n- `https://example.com/attr/projects` - Project-specific attributes\n\n**Auto-saves:** `namespace_id` for use in subsequent requests"
               },
@@ -442,8 +471,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.namespaces.NamespaceService/ListNamespaces",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.namespaces.NamespaceService", "ListNamespaces"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.namespaces.NamespaceService",
+                    "ListNamespaces"
+                  ]
                 },
                 "description": "List all namespaces, optionally filtered by state.\n\n**States:**\n- ACTIVE: Currently active namespaces\n- INACTIVE: Deactivated namespaces\n- ANY: All namespaces regardless of state"
               },
@@ -465,8 +499,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.namespaces.NamespaceService/GetNamespace",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.namespaces.NamespaceService", "GetNamespace"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.namespaces.NamespaceService",
+                    "GetNamespace"
+                  ]
                 },
                 "description": "Get details of a specific namespace by ID."
               },
@@ -488,8 +527,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.namespaces.NamespaceService/UpdateNamespace",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.namespaces.NamespaceService", "UpdateNamespace"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.namespaces.NamespaceService",
+                    "UpdateNamespace"
+                  ]
                 },
                 "description": "Update namespace metadata.\n\n**Update Behaviors:**\n- EXTEND: Merge new metadata with existing\n- REPLACE: Replace all metadata with new values"
               },
@@ -511,10 +555,189 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.namespaces.NamespaceService/DeactivateNamespace",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.namespaces.NamespaceService", "DeactivateNamespace"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.namespaces.NamespaceService",
+                    "DeactivateNamespace"
+                  ]
                 },
                 "description": "Deactivate a namespace. This soft-deletes the namespace and all its attributes.\n\n**Warning:** This action cascades to all attributes and values in the namespace."
+              },
+              "response": []
+            },
+            {
+              "name": "AssignPublicKeyToNamespace",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"namespace_id\": \"{{namespace_id}}\",\n  \"public_key\": {\n    \"local\": \"-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\\n-----END PUBLIC KEY-----\",\n    \"remote\": \"\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.namespaces.NamespaceService/AssignPublicKeyToNamespace",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.namespaces.NamespaceService",
+                    "AssignPublicKeyToNamespace"
+                  ]
+                },
+                "description": "Assign a public key to a namespace for encryption.\n\nThis method associates a public key with a namespace, enabling encryption of all data tagged with attributes in this namespace. The key can be either locally stored or remotely referenced.\n\n**Use Cases:**\n- Enable encryption at namespace level\n- Set up default key material for all attributes in namespace\n- Configure namespace-wide cryptographic protection\n\n**Parameters:**\n- `namespace_id`: UUID of the namespace\n- `public_key.local`: PEM-encoded public key (local storage)\n- `public_key.remote`: URL to remote public key (alternative to local)"
+              },
+              "response": []
+            },
+            {
+              "name": "RemovePublicKeyFromNamespace",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"namespace_id\": \"{{namespace_id}}\",\n  \"public_key_id\": \"key-uuid\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.namespaces.NamespaceService/RemovePublicKeyFromNamespace",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.namespaces.NamespaceService",
+                    "RemovePublicKeyFromNamespace"
+                  ]
+                },
+                "description": "Remove a public key from a namespace.\n\nThis method disassociates a public key from a namespace, disabling namespace-level encryption operations.\n\n**Use Cases:**\n- Namespace-level key rotation\n- Revoke encryption capability for entire namespace\n- Clean up unused key associations\n\n**Parameters:**\n- `namespace_id`: UUID of the namespace\n- `public_key_id`: UUID of the public key to remove"
+              },
+              "response": []
+            },
+            {
+              "name": "AssignCertificateToNamespace",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"namespace_id\": \"{{namespace_id}}\",\n  \"certificate\": \"-----BEGIN CERTIFICATE-----\\nMIIDXTCCAkWgAwIBAgIJAKL...\\n-----END CERTIFICATE-----\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.namespaces.NamespaceService/AssignCertificateToNamespace",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.namespaces.NamespaceService",
+                    "AssignCertificateToNamespace"
+                  ]
+                },
+                "description": "Assign an X.509 certificate to a namespace for TLS/encryption.\n\nThis method associates an X.509 certificate with a namespace, enabling certificate-based authentication and encryption.\n\n**Use Cases:**\n- Enable mutual TLS for namespace operations\n- Certificate-based key establishment\n- PKI integration for namespace security\n\n**Parameters:**\n- `namespace_id`: UUID of the namespace\n- `certificate`: PEM-encoded X.509 certificate"
+              },
+              "response": []
+            },
+            {
+              "name": "RemoveCertificateFromNamespace",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"namespace_id\": \"{{namespace_id}}\",\n  \"certificate_id\": \"cert-uuid\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.namespaces.NamespaceService/RemoveCertificateFromNamespace",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.namespaces.NamespaceService",
+                    "RemoveCertificateFromNamespace"
+                  ]
+                },
+                "description": "Remove an X.509 certificate from a namespace.\n\nThis method disassociates a certificate from a namespace, removing certificate-based authentication.\n\n**Use Cases:**\n- Certificate rotation\n- Revoke certificate-based access\n- Clean up expired certificates\n\n**Parameters:**\n- `namespace_id`: UUID of the namespace\n- `certificate_id`: UUID of the certificate to remove"
+              },
+              "response": []
+            },
+            {
+              "name": "AssignKeyAccessServerToNamespace (Deprecated)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"namespace_key_access_server\": {\n    \"namespace_id\": \"{{namespace_id}}\",\n    \"key_access_server_id\": \"kas-uuid\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.namespaces.NamespaceService/AssignKeyAccessServerToNamespace",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.namespaces.NamespaceService",
+                    "AssignKeyAccessServerToNamespace"
+                  ]
+                },
+                "description": "**DEPRECATED** - Assign a Key Access Server (KAS) to a namespace for key management.\n\nThis method associates a KAS with a namespace, enabling centralized key management for all attributes in the namespace.\n\n**Use Cases:**\n- Configure namespace-level KAS\n- Set up default key management for all attributes\n- Enable centralized key operations\n\n**Parameters:**\n- `namespace_id`: UUID of the namespace\n- `key_access_server_id`: UUID of the KAS"
+              },
+              "response": []
+            },
+            {
+              "name": "RemoveKeyAccessServerFromNamespace (Deprecated)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"namespace_key_access_server\": {\n    \"namespace_id\": \"{{namespace_id}}\",\n    \"key_access_server_id\": \"kas-uuid\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.namespaces.NamespaceService/RemoveKeyAccessServerFromNamespace",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.namespaces.NamespaceService",
+                    "RemoveKeyAccessServerFromNamespace"
+                  ]
+                },
+                "description": "**DEPRECATED** - Remove a Key Access Server (KAS) from a namespace.\n\nThis method disassociates a KAS from a namespace, removing namespace-level key management.\n\n**Use Cases:**\n- Namespace-level KAS migration\n- Remove key management from namespace\n- Clean up KAS associations\n\n**Parameters:**\n- `namespace_id`: UUID of the namespace\n- `key_access_server_id`: UUID of the KAS to remove"
               },
               "response": []
             }
@@ -555,8 +778,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.attributes.AttributesService/CreateAttribute",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.attributes.AttributesService", "CreateAttribute"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "CreateAttribute"
+                  ]
                 },
                 "description": "Create a new attribute within a namespace.\n\n**Namespace Lifecycle Step 2/5**\n\nAttributes define the data classification properties. Each attribute has a name and belongs to a namespace.\n\n**Rules:**\n- HIERARCHY: Values have ordered relationships (e.g., Top Secret > Secret > Confidential)\n- ALL_OF: All attribute values must be present\n- ANY_OF: Any attribute value is sufficient\n\n**Auto-saves:** `attribute_id` for use in subsequent requests"
               },
@@ -578,8 +806,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.attributes.AttributesService/ListAttributes",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.attributes.AttributesService", "ListAttributes"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "ListAttributes"
+                  ]
                 },
                 "description": "List all attributes, optionally filtered by namespace and state."
               },
@@ -601,8 +834,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.attributes.AttributesService/GetAttribute",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.attributes.AttributesService", "GetAttribute"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "GetAttribute"
+                  ]
                 },
                 "description": "Get details of a specific attribute by ID."
               },
@@ -624,8 +862,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.attributes.AttributesService/UpdateAttribute",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.attributes.AttributesService", "UpdateAttribute"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "UpdateAttribute"
+                  ]
                 },
                 "description": "Update attribute metadata."
               },
@@ -647,8 +890,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.attributes.AttributesService/DeactivateAttribute",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.attributes.AttributesService", "DeactivateAttribute"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "DeactivateAttribute"
+                  ]
                 },
                 "description": "Deactivate an attribute and all its values."
               },
@@ -670,10 +918,247 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.attributes.AttributesService/GetAttributeValuesByFqns",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.attributes.AttributesService", "GetAttributeValuesByFqns"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "GetAttributeValuesByFqns"
+                  ]
                 },
                 "description": "Retrieve multiple attribute values by their fully qualified names (FQNs).\n\nFQN format: `namespace/attr/AttributeName/value/ValueName`\n\n**Options:**\n- `with_subject_maps`: Include subject mappings\n- `with_resource_maps`: Include resource mappings"
+              },
+              "response": []
+            },
+            {
+              "name": "AssignPublicKeyToAttribute",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"attribute_id\": \"{{attribute_id}}\",\n  \"public_key\": {\n    \"local\": \"-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\\n-----END PUBLIC KEY-----\",\n    \"remote\": \"\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/AssignPublicKeyToAttribute",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "AssignPublicKeyToAttribute"
+                  ]
+                },
+                "description": "Assign a public key to an attribute for encryption.\n\nThis method associates a public key with an attribute, enabling encryption of data tagged with this attribute. The key can be either locally stored or remotely referenced.\n\n**Use Cases:**\n- Enable encryption for attribute-based access control\n- Set up key material for TDF encryption\n- Configure attribute-level cryptographic protection\n\n**Parameters:**\n- `attribute_id`: UUID of the attribute\n- `public_key.local`: PEM-encoded public key (local storage)\n- `public_key.remote`: URL to remote public key (alternative to local)"
+              },
+              "response": []
+            },
+            {
+              "name": "AssignPublicKeyToValue",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"value_id\": \"{{value_id}}\",\n  \"public_key\": {\n    \"local\": \"-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\\n-----END PUBLIC KEY-----\",\n    \"remote\": \"\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/AssignPublicKeyToValue",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "AssignPublicKeyToValue"
+                  ]
+                },
+                "description": "Assign a public key to a specific attribute value.\n\nThis method associates a public key with a specific attribute value, enabling fine-grained encryption control at the value level rather than the attribute level.\n\n**Use Cases:**\n- Different encryption keys for different classification levels\n- Value-specific cryptographic protection\n- Granular key management for hierarchical attributes\n\n**Parameters:**\n- `value_id`: UUID of the attribute value\n- `public_key.local`: PEM-encoded public key (local storage)\n- `public_key.remote`: URL to remote public key (alternative to local)"
+              },
+              "response": []
+            },
+            {
+              "name": "RemovePublicKeyFromAttribute",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"attribute_id\": \"{{attribute_id}}\",\n  \"public_key_id\": \"key-uuid\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/RemovePublicKeyFromAttribute",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "RemovePublicKeyFromAttribute"
+                  ]
+                },
+                "description": "Remove a public key from an attribute.\n\nThis method disassociates a public key from an attribute, disabling encryption operations that depend on this key.\n\n**Use Cases:**\n- Key rotation - remove old keys\n- Revoke encryption capability\n- Clean up unused key associations\n\n**Parameters:**\n- `attribute_id`: UUID of the attribute\n- `public_key_id`: UUID of the public key to remove"
+              },
+              "response": []
+            },
+            {
+              "name": "RemovePublicKeyFromValue",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"value_id\": \"{{value_id}}\",\n  \"public_key_id\": \"key-uuid\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/RemovePublicKeyFromValue",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "RemovePublicKeyFromValue"
+                  ]
+                },
+                "description": "Remove a public key from a specific attribute value.\n\nThis method disassociates a public key from an attribute value, disabling value-level encryption operations.\n\n**Use Cases:**\n- Value-level key rotation\n- Remove encryption from specific classification levels\n- Clean up value-specific key associations\n\n**Parameters:**\n- `value_id`: UUID of the attribute value\n- `public_key_id`: UUID of the public key to remove"
+              },
+              "response": []
+            },
+            {
+              "name": "AssignKeyAccessServerToAttribute (Deprecated)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"attribute_key_access_server\": {\n    \"attribute_id\": \"{{attribute_id}}\",\n    \"key_access_server_id\": \"kas-uuid\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/AssignKeyAccessServerToAttribute",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "AssignKeyAccessServerToAttribute"
+                  ]
+                },
+                "description": "**DEPRECATED** - Assign a Key Access Server (KAS) to an attribute for key management.\n\nThis method associates a KAS with an attribute, enabling centralized key management and access control.\n\n**Use Cases:**\n- Configure KAS for attribute-based encryption\n- Set up key rewrap endpoints\n- Enable centralized key management\n\n**Parameters:**\n- `attribute_id`: UUID of the attribute\n- `key_access_server_id`: UUID of the KAS"
+              },
+              "response": []
+            },
+            {
+              "name": "AssignKeyAccessServerToValue (Deprecated)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"value_key_access_server\": {\n    \"value_id\": \"{{value_id}}\",\n    \"key_access_server_id\": \"kas-uuid\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/AssignKeyAccessServerToValue",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "AssignKeyAccessServerToValue"
+                  ]
+                },
+                "description": "**DEPRECATED** - Assign a Key Access Server (KAS) to a specific attribute value.\n\nThis method associates a KAS with an attribute value, enabling value-level key management.\n\n**Use Cases:**\n- Different KAS for different classification levels\n- Value-specific key management\n- Granular KAS assignment for hierarchical attributes\n\n**Parameters:**\n- `value_id`: UUID of the attribute value\n- `key_access_server_id`: UUID of the KAS"
+              },
+              "response": []
+            },
+            {
+              "name": "RemoveKeyAccessServerFromAttribute (Deprecated)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"attribute_key_access_server\": {\n    \"attribute_id\": \"{{attribute_id}}\",\n    \"key_access_server_id\": \"kas-uuid\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/RemoveKeyAccessServerFromAttribute",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "RemoveKeyAccessServerFromAttribute"
+                  ]
+                },
+                "description": "**DEPRECATED** - Remove a Key Access Server (KAS) from an attribute.\n\nThis method disassociates a KAS from an attribute, removing centralized key management.\n\n**Use Cases:**\n- KAS migration\n- Remove key management capability\n- Clean up KAS associations\n\n**Parameters:**\n- `attribute_id`: UUID of the attribute\n- `key_access_server_id`: UUID of the KAS to remove"
+              },
+              "response": []
+            },
+            {
+              "name": "RemoveKeyAccessServerFromValue (Deprecated)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"value_key_access_server\": {\n    \"value_id\": \"{{value_id}}\",\n    \"key_access_server_id\": \"kas-uuid\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.attributes.AttributesService/RemoveKeyAccessServerFromValue",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "RemoveKeyAccessServerFromValue"
+                  ]
+                },
+                "description": "**DEPRECATED** - Remove a Key Access Server (KAS) from a specific attribute value.\n\nThis method disassociates a KAS from an attribute value, removing value-level key management.\n\n**Use Cases:**\n- Value-level KAS migration\n- Remove key management from specific classification levels\n- Clean up value-specific KAS associations\n\n**Parameters:**\n- `value_id`: UUID of the attribute value\n- `key_access_server_id`: UUID of the KAS to remove"
               },
               "response": []
             }
@@ -714,8 +1199,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.attributes.AttributesService/CreateAttributeValue",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.attributes.AttributesService", "CreateAttributeValue"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "CreateAttributeValue"
+                  ]
                 },
                 "description": "Create a new value for an attribute.\n\n**Namespace Lifecycle Step 3/5**\n\nValues are the actual data classification levels or categories.\n\nExample hierarchy:\n- TopSecret (level 3)\n- Secret (level 2)\n- Confidential (level 1)\n- Public (level 0)\n\n**Auto-saves:** `value_id` for use in subsequent requests"
               },
@@ -737,8 +1227,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.attributes.AttributesService/CreateAttributeValue",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.attributes.AttributesService", "CreateAttributeValue"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "CreateAttributeValue"
+                  ]
                 },
                 "description": "Create TopSecret classification value."
               },
@@ -760,8 +1255,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.attributes.AttributesService/CreateAttributeValue",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.attributes.AttributesService", "CreateAttributeValue"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "CreateAttributeValue"
+                  ]
                 },
                 "description": "Create Confidential classification value."
               },
@@ -783,8 +1283,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.attributes.AttributesService/ListAttributeValues",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.attributes.AttributesService", "ListAttributeValues"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "ListAttributeValues"
+                  ]
                 },
                 "description": "List all values for an attribute."
               },
@@ -806,8 +1311,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.attributes.AttributesService/GetAttributeValue",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.attributes.AttributesService", "GetAttributeValue"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "GetAttributeValue"
+                  ]
                 },
                 "description": "Get details of a specific attribute value by ID."
               },
@@ -829,8 +1339,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.attributes.AttributesService/UpdateAttributeValue",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.attributes.AttributesService", "UpdateAttributeValue"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "UpdateAttributeValue"
+                  ]
                 },
                 "description": "Update attribute value metadata."
               },
@@ -852,8 +1367,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.attributes.AttributesService/DeactivateAttributeValue",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.attributes.AttributesService", "DeactivateAttributeValue"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.attributes.AttributesService",
+                    "DeactivateAttributeValue"
+                  ]
                 },
                 "description": "Deactivate an attribute value."
               },
@@ -881,8 +1401,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/MatchSubjectMappings",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.subjectmapping.SubjectMappingService", "MatchSubjectMappings"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.subjectmapping.SubjectMappingService",
+                    "MatchSubjectMappings"
+                  ]
                 },
                 "description": "Match subject properties against subject mappings to find applicable attribute values.\n\n**Input:**\n- Subject properties (email, role, group, etc.)\n- Actions being requested\n\n**Returns:**\n- Attribute values the subject can access\n- Matching subject mappings\n\n**Use Cases:**\n- Determine what data a user can access\n- Real-time entitlement resolution\n- Policy evaluation"
               },
@@ -904,8 +1429,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/CreateSubjectMapping",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.subjectmapping.SubjectMappingService", "CreateSubjectMapping"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.subjectmapping.SubjectMappingService",
+                    "CreateSubjectMapping"
+                  ]
                 },
                 "description": "Map subjects (users/entities) to attribute values with specific actions.\n\n**Namespace Lifecycle Step 4/5**\n\nSubject mappings define WHO can perform WHAT actions on data with specific attributes.\n\n**Standard Actions:**\n- STANDARD_ACTION_DECRYPT: Decrypt and read data\n- STANDARD_ACTION_TRANSMIT: Forward/share data\n- STANDARD_ACTION_MODIFY: Edit data\n\n**Existing Subject:**\nUse `existing_subject_mappings` to reference an existing subject condition set."
               },
@@ -927,8 +1457,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/CreateSubjectMapping",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.subjectmapping.SubjectMappingService", "CreateSubjectMapping"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.subjectmapping.SubjectMappingService",
+                    "CreateSubjectMapping"
+                  ]
                 },
                 "description": "Create a subject mapping with inline subject condition set.\n\n**Subject Selectors:**\n- `.emailAddress`: User email\n- `.username`: Username\n- `.groups`: User group membership\n- `.role`: User role\n\n**Operators:**\n- IN: Value must be in the list\n- NOT_IN: Value must not be in the list"
               },
@@ -950,8 +1485,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/ListSubjectMappings",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.subjectmapping.SubjectMappingService", "ListSubjectMappings"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.subjectmapping.SubjectMappingService",
+                    "ListSubjectMappings"
+                  ]
                 },
                 "description": "List all subject mappings."
               },
@@ -973,8 +1513,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/GetSubjectMapping",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.subjectmapping.SubjectMappingService", "GetSubjectMapping"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.subjectmapping.SubjectMappingService",
+                    "GetSubjectMapping"
+                  ]
                 },
                 "description": "Get details of a specific subject mapping."
               },
@@ -996,8 +1541,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/UpdateSubjectMapping",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.subjectmapping.SubjectMappingService", "UpdateSubjectMapping"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.subjectmapping.SubjectMappingService",
+                    "UpdateSubjectMapping"
+                  ]
                 },
                 "description": "Update subject mapping actions and metadata."
               },
@@ -1019,10 +1569,44 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/DeleteSubjectMapping",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.subjectmapping.SubjectMappingService", "DeleteSubjectMapping"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.subjectmapping.SubjectMappingService",
+                    "DeleteSubjectMapping"
+                  ]
                 },
                 "description": "Delete a subject mapping."
+              },
+              "response": []
+            },
+            {
+              "name": "DeleteAllUnmappedSubjectConditionSets",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/DeleteAllUnmappedSubjectConditionSets",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.subjectmapping.SubjectMappingService",
+                    "DeleteAllUnmappedSubjectConditionSets"
+                  ]
+                },
+                "description": "Bulk cleanup operation to delete all unmapped subject condition sets.\n\nThis method removes all subject condition sets that are not currently mapped to any attributes or values. Useful for cleaning up orphaned condition sets.\n\n**Use Cases:**\n- Clean up orphaned subject condition sets\n- Maintenance operations\n- Remove unused policy artifacts\n- Database cleanup\n\n**Warning:** This operation is irreversible. Ensure condition sets are truly unused before deletion.\n\n**Returns:**\n- Count of deleted condition sets\n- List of deleted condition set IDs"
               },
               "response": []
             }
@@ -1048,8 +1632,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/CreateResourceMappingGroup",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.resourcemapping.ResourceMappingService", "CreateResourceMappingGroup"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.resourcemapping.ResourceMappingService",
+                    "CreateResourceMappingGroup"
+                  ]
                 },
                 "description": "Create a resource mapping group to organize related resource mappings.\n\n**Groups organize mappings by:**\n- Namespace\n- Category (e.g., security, compliance, data type)\n- Purpose (e.g., auto-classification, DLP)\n\n**Use Cases:**\n- Organize keyword lists\n- Group related classification rules\n- Manage mapping sets by purpose"
               },
@@ -1071,8 +1660,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/ListResourceMappingGroups",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.resourcemapping.ResourceMappingService", "ListResourceMappingGroups"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.resourcemapping.ResourceMappingService",
+                    "ListResourceMappingGroups"
+                  ]
                 },
                 "description": "List all resource mapping groups, optionally filtered by namespace."
               },
@@ -1094,8 +1688,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/GetResourceMappingGroup",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.resourcemapping.ResourceMappingService", "GetResourceMappingGroup"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.resourcemapping.ResourceMappingService",
+                    "GetResourceMappingGroup"
+                  ]
                 },
                 "description": "Get details of a specific resource mapping group."
               },
@@ -1117,8 +1716,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/UpdateResourceMappingGroup",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.resourcemapping.ResourceMappingService", "UpdateResourceMappingGroup"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.resourcemapping.ResourceMappingService",
+                    "UpdateResourceMappingGroup"
+                  ]
                 },
                 "description": "Update resource mapping group metadata."
               },
@@ -1140,8 +1744,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/DeleteResourceMappingGroup",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.resourcemapping.ResourceMappingService", "DeleteResourceMappingGroup"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.resourcemapping.ResourceMappingService",
+                    "DeleteResourceMappingGroup"
+                  ]
                 },
                 "description": "Delete a resource mapping group.\n\n**Warning:** This will fail if the group contains any resource mappings."
               },
@@ -1163,8 +1772,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/CreateResourceMapping",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.resourcemapping.ResourceMappingService", "CreateResourceMapping"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.resourcemapping.ResourceMappingService",
+                    "CreateResourceMapping"
+                  ]
                 },
                 "description": "Map keywords/terms to attribute values for automatic classification.\n\n**Namespace Lifecycle Step 5/5**\n\nResource mappings enable automatic attribute assignment based on content keywords.\n\n**Use Cases:**\n- Keyword-based auto-classification\n- Content scanning and tagging\n- DLP policy enforcement\n\n**Example:** Documents containing \"secret\" are automatically tagged with Secret classification."
               },
@@ -1186,8 +1800,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/ListResourceMappings",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.resourcemapping.ResourceMappingService", "ListResourceMappings"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.resourcemapping.ResourceMappingService",
+                    "ListResourceMappings"
+                  ]
                 },
                 "description": "List all resource mappings."
               },
@@ -1209,8 +1828,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/GetResourceMapping",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.resourcemapping.ResourceMappingService", "GetResourceMapping"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.resourcemapping.ResourceMappingService",
+                    "GetResourceMapping"
+                  ]
                 },
                 "description": "Get details of a specific resource mapping."
               },
@@ -1232,8 +1856,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/UpdateResourceMapping",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.resourcemapping.ResourceMappingService", "UpdateResourceMapping"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.resourcemapping.ResourceMappingService",
+                    "UpdateResourceMapping"
+                  ]
                 },
                 "description": "Update resource mapping terms and metadata."
               },
@@ -1255,8 +1884,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/DeleteResourceMapping",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.resourcemapping.ResourceMappingService", "DeleteResourceMapping"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.resourcemapping.ResourceMappingService",
+                    "DeleteResourceMapping"
+                  ]
                 },
                 "description": "Delete a resource mapping."
               },
@@ -1284,8 +1918,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/CreateSubjectConditionSet",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.subjectmapping.SubjectMappingService", "CreateSubjectConditionSet"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.subjectmapping.SubjectMappingService",
+                    "CreateSubjectConditionSet"
+                  ]
                 },
                 "description": "Create reusable subject condition sets for complex subject matching.\n\n**Boolean Operators:**\n- AND: All conditions must be true\n- OR: At least one condition must be true\n\n**Condition Structure:**\n- Multiple condition groups can be combined\n- Each group has conditions with a boolean operator\n- Conditions check subject properties against values"
               },
@@ -1307,8 +1946,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/ListSubjectConditionSets",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.subjectmapping.SubjectMappingService", "ListSubjectConditionSets"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.subjectmapping.SubjectMappingService",
+                    "ListSubjectConditionSets"
+                  ]
                 },
                 "description": "List all subject condition sets."
               },
@@ -1330,8 +1974,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/GetSubjectConditionSet",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.subjectmapping.SubjectMappingService", "GetSubjectConditionSet"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.subjectmapping.SubjectMappingService",
+                    "GetSubjectConditionSet"
+                  ]
                 },
                 "description": "Get details of a specific subject condition set."
               },
@@ -1353,8 +2002,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/UpdateSubjectConditionSet",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.subjectmapping.SubjectMappingService", "UpdateSubjectConditionSet"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.subjectmapping.SubjectMappingService",
+                    "UpdateSubjectConditionSet"
+                  ]
                 },
                 "description": "Update subject condition set metadata."
               },
@@ -1376,8 +2030,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/DeleteSubjectConditionSet",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.subjectmapping.SubjectMappingService", "DeleteSubjectConditionSet"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.subjectmapping.SubjectMappingService",
+                    "DeleteSubjectConditionSet"
+                  ]
                 },
                 "description": "Delete a subject condition set.\n\n**Warning:** This will fail if the condition set is referenced by any subject mappings."
               },
@@ -1405,8 +2064,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/CreateKeyAccessServer",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.kasregistry.KeyAccessServerRegistryService", "CreateKeyAccessServer"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.kasregistry.KeyAccessServerRegistryService",
+                    "CreateKeyAccessServer"
+                  ]
                 },
                 "description": "Register a Key Access Server (KAS) for key management.\n\n**Public Key Options:**\n- `remote`: URL to fetch public key\n- `local`: Inline PEM-encoded public key\n\n**KAS Configuration:**\nKAS instances handle encryption/decryption operations and must be registered before use."
               },
@@ -1428,8 +2092,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/CreateKeyAccessServer",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.kasregistry.KeyAccessServerRegistryService", "CreateKeyAccessServer"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.kasregistry.KeyAccessServerRegistryService",
+                    "CreateKeyAccessServer"
+                  ]
                 },
                 "description": "Register a KAS with inline public key."
               },
@@ -1451,8 +2120,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/ListKeyAccessServers",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.kasregistry.KeyAccessServerRegistryService", "ListKeyAccessServers"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.kasregistry.KeyAccessServerRegistryService",
+                    "ListKeyAccessServers"
+                  ]
                 },
                 "description": "List all registered Key Access Servers."
               },
@@ -1474,8 +2148,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/GetKeyAccessServer",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.kasregistry.KeyAccessServerRegistryService", "GetKeyAccessServer"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.kasregistry.KeyAccessServerRegistryService",
+                    "GetKeyAccessServer"
+                  ]
                 },
                 "description": "Get details of a specific Key Access Server."
               },
@@ -1497,8 +2176,13 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/UpdateKeyAccessServer",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.kasregistry.KeyAccessServerRegistryService", "UpdateKeyAccessServer"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.kasregistry.KeyAccessServerRegistryService",
+                    "UpdateKeyAccessServer"
+                  ]
                 },
                 "description": "Update Key Access Server configuration."
               },
@@ -1520,10 +2204,276 @@
                 },
                 "url": {
                   "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/DeleteKeyAccessServer",
-                  "host": ["{{base_url}}"],
-                  "path": ["policy.kasregistry.KeyAccessServerRegistryService", "DeleteKeyAccessServer"]
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.kasregistry.KeyAccessServerRegistryService",
+                    "DeleteKeyAccessServer"
+                  ]
                 },
                 "description": "Delete a Key Access Server registration."
+              },
+              "response": []
+            },
+            {
+              "name": "CreateKey",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key_access_server_id\": \"kas-uuid\",\n  \"algorithm\": \"rsa:2048\",\n  \"public_key\": \"-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\\n-----END PUBLIC KEY-----\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/CreateKey",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.kasregistry.KeyAccessServerRegistryService",
+                    "CreateKey"
+                  ]
+                },
+                "description": "Create a new cryptographic key in the KAS registry.\n\nThis method creates a new key entry associated with a Key Access Server. The key can be used for encryption and key wrapping operations.\n\n**Use Cases:**\n- Generate new key material for KAS\n- Set up encryption keys for attribute protection\n- Initialize KAS with cryptographic keys\n\n**Supported Algorithms:**\n- `rsa:2048` - RSA 2048-bit\n- `rsa:3072` - RSA 3072-bit\n- `rsa:4096` - RSA 4096-bit\n- `ec:secp256r1` - ECDSA P-256\n- `ec:secp384r1` - ECDSA P-384\n\n**Parameters:**\n- `key_access_server_id`: UUID of the KAS\n- `algorithm`: Key algorithm and size\n- `public_key`: PEM-encoded public key"
+              },
+              "response": []
+            },
+            {
+              "name": "GetKey",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key_id\": \"key-uuid\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/GetKey",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.kasregistry.KeyAccessServerRegistryService",
+                    "GetKey"
+                  ]
+                },
+                "description": "Retrieve key details by ID from the KAS registry.\n\nThis method fetches the metadata and public key material for a specific key.\n\n**Use Cases:**\n- Retrieve key information for encryption\n- Verify key configuration\n- Audit key usage\n\n**Returns:**\n- Key ID and metadata\n- Algorithm information\n- Public key material\n- Associated KAS details\n\n**Parameters:**\n- `key_id`: UUID of the key"
+              },
+              "response": []
+            },
+            {
+              "name": "ListKeys",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key_access_server_id\": \"kas-uuid\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/ListKeys",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.kasregistry.KeyAccessServerRegistryService",
+                    "ListKeys"
+                  ]
+                },
+                "description": "List all keys for a specific Key Access Server.\n\nThis method retrieves all cryptographic keys associated with a KAS, useful for key management and auditing.\n\n**Use Cases:**\n- Audit all keys for a KAS\n- Key inventory management\n- Identify keys for rotation\n\n**Returns:**\n- List of keys with metadata\n- Algorithm information\n- Creation timestamps\n- Key status (active/deprecated)\n\n**Parameters:**\n- `key_access_server_id`: UUID of the KAS"
+              },
+              "response": []
+            },
+            {
+              "name": "UpdateKey",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key_id\": \"key-uuid\",\n  \"metadata\": {\n    \"name\": \"Updated Key Name\",\n    \"description\": \"Updated description\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/UpdateKey",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.kasregistry.KeyAccessServerRegistryService",
+                    "UpdateKey"
+                  ]
+                },
+                "description": "Update key metadata in the KAS registry.\n\nThis method updates the metadata associated with a key. The actual key material cannot be changed; use rotation for key updates.\n\n**Use Cases:**\n- Update key descriptions\n- Modify key metadata\n- Tag keys for organization\n\n**Note:** Key material (public/private keys) cannot be updated. Use `RotateKey` for key material changes.\n\n**Parameters:**\n- `key_id`: UUID of the key\n- `metadata`: Updated metadata fields"
+              },
+              "response": []
+            },
+            {
+              "name": "RotateKey",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key_id\": \"key-uuid\",\n  \"new_key\": {\n    \"algorithm\": \"rsa:2048\",\n    \"public_key\": \"-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\\n-----END PUBLIC KEY-----\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/RotateKey",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.kasregistry.KeyAccessServerRegistryService",
+                    "RotateKey"
+                  ]
+                },
+                "description": "Rotate a cryptographic key (create new, deprecate old).\n\nThis method performs key rotation by creating a new key and marking the old key as deprecated. The old key remains available for decryption of existing data.\n\n**Use Cases:**\n- Regular key rotation for security\n- Respond to key compromise\n- Upgrade to stronger algorithms\n\n**Process:**\n1. Create new key with provided material\n2. Mark old key as deprecated\n3. Return new key ID\n4. Old key remains available for decryption\n\n**Parameters:**\n- `key_id`: UUID of the key to rotate\n- `new_key.algorithm`: Algorithm for new key\n- `new_key.public_key`: PEM-encoded public key for new key"
+              },
+              "response": []
+            },
+            {
+              "name": "SetBaseKey",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key_access_server_id\": \"kas-uuid\",\n  \"key_id\": \"key-uuid\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/SetBaseKey",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.kasregistry.KeyAccessServerRegistryService",
+                    "SetBaseKey"
+                  ]
+                },
+                "description": "Set the base encryption key for a Key Access Server.\n\nThis method designates a specific key as the base/default key for a KAS. The base key is used for default encryption operations when no specific key is requested.\n\n**Use Cases:**\n- Configure default encryption key\n- Set initial KAS key\n- Change primary encryption key\n\n**Important:** Only one base key can be active per KAS.\n\n**Parameters:**\n- `key_access_server_id`: UUID of the KAS\n- `key_id`: UUID of the key to set as base"
+              },
+              "response": []
+            },
+            {
+              "name": "GetBaseKey",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key_access_server_id\": \"kas-uuid\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/GetBaseKey",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.kasregistry.KeyAccessServerRegistryService",
+                    "GetBaseKey"
+                  ]
+                },
+                "description": "Retrieve the base encryption key for a Key Access Server.\n\nThis method fetches the current base/default key for a KAS.\n\n**Use Cases:**\n- Retrieve default encryption key\n- Verify base key configuration\n- Audit default key usage\n\n**Returns:**\n- Base key ID and metadata\n- Algorithm information\n- Public key material\n\n**Parameters:**\n- `key_access_server_id`: UUID of the KAS"
+              },
+              "response": []
+            },
+            {
+              "name": "ListKeyMappings",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key_access_server_id\": \"kas-uuid\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/ListKeyMappings",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.kasregistry.KeyAccessServerRegistryService",
+                    "ListKeyMappings"
+                  ]
+                },
+                "description": "List attribute-to-key mappings for a Key Access Server.\n\nThis method retrieves all mappings between attributes/values and their associated encryption keys. Useful for understanding which keys protect which attributes.\n\n**Use Cases:**\n- Audit key-attribute associations\n- Understand encryption configuration\n- Plan key rotation impact\n- Verify attribute protection\n\n**Returns:**\n- List of attribute-to-key mappings\n- Associated namespace information\n- Key details for each mapping\n\n**Parameters:**\n- `key_access_server_id`: UUID of the KAS"
+              },
+              "response": []
+            },
+            {
+              "name": "ListKeyAccessServerGrants (Deprecated)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key_access_server_id\": \"kas-uuid\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.kasregistry.KeyAccessServerRegistryService/ListKeyAccessServerGrants",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.kasregistry.KeyAccessServerRegistryService",
+                    "ListKeyAccessServerGrants"
+                  ]
+                },
+                "description": "**DEPRECATED** - List all grants for a Key Access Server.\n\nThis method retrieves all access grants associated with a KAS. Grants define which entities can access keys for decryption.\n\n**Use Cases:**\n- Audit KAS access permissions\n- Review grant policies\n- Compliance reporting\n\n**Returns:**\n- List of grants with subject details\n- Associated attribute/value information\n- Grant conditions\n\n**Parameters:**\n- `key_access_server_id`: UUID of the KAS"
               },
               "response": []
             }
@@ -1552,8 +2502,13 @@
             },
             "url": {
               "raw": "{{base_url}}/kas.AccessService/Rewrap",
-              "host": ["{{base_url}}"],
-              "path": ["kas.AccessService", "Rewrap"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "kas.AccessService",
+                "Rewrap"
+              ]
             },
             "description": "Rewrap encrypted data encryption keys (DEKs) for authorized users.\n\n**Process:**\n1. Client sends encrypted DEK wrapped with KAS public key\n2. KAS validates user entitlements against policy\n3. If authorized, KAS rewraps DEK with user's public key\n4. Client can then decrypt the DEK and access data\n\n**Request Token:**\nJWT containing:\n- Encrypted DEK\n- Data attributes\n- User identity\n- Client public key"
           },
@@ -1575,8 +2530,13 @@
             },
             "url": {
               "raw": "{{base_url}}/kas.AccessService/PublicKey",
-              "host": ["{{base_url}}"],
-              "path": ["kas.AccessService", "PublicKey"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "kas.AccessService",
+                "PublicKey"
+              ]
             },
             "description": "Retrieve the KAS public key for encrypting DEKs.\n\n**Use this key to:**\n- Wrap data encryption keys before sending to KAS\n- Validate KAS signatures\n\n**Algorithms:**\n- rsa:2048\n- rsa:4096\n- ec:secp256r1"
           },
@@ -1598,8 +2558,13 @@
             },
             "url": {
               "raw": "{{base_url}}/kas.AccessService/LegacyPublicKey",
-              "host": ["{{base_url}}"],
-              "path": ["kas.AccessService", "LegacyPublicKey"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "kas.AccessService",
+                "LegacyPublicKey"
+              ]
             },
             "description": "Legacy endpoint for retrieving KAS public key.\n\n**Deprecated:** Use PublicKey (POST) for new implementations."
           },
@@ -1627,8 +2592,13 @@
             },
             "url": {
               "raw": "{{base_url}}/wellknownconfiguration.WellKnownService/GetWellKnownConfiguration",
-              "host": ["{{base_url}}"],
-              "path": ["wellknownconfiguration.WellKnownService", "GetWellKnownConfiguration"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "wellknownconfiguration.WellKnownService",
+                "GetWellKnownConfiguration"
+              ]
             },
             "description": "Retrieve platform configuration and service discovery information.\n\n**Returns:**\n- Available services and endpoints\n- Platform version information\n- Feature flags and capabilities\n- OAuth/OIDC configuration\n- Public keys and certificates\n\n**Use Cases:**\n- Service discovery\n- Client auto-configuration\n- Version compatibility checking"
           },
@@ -1656,8 +2626,13 @@
             },
             "url": {
               "raw": "{{base_url}}/authorization.AuthorizationService/GetDecisions",
-              "host": ["{{base_url}}"],
-              "path": ["authorization.AuthorizationService", "GetDecisions"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "authorization.AuthorizationService",
+                "GetDecisions"
+              ]
             },
             "description": "Request authorization decisions for specific actions on resources.\n\n**Decision Request:**\n- **actions**: What action is being requested (DECRYPT, TRANSMIT, etc.)\n- **entity_chain**: User/entity making the request with their attributes\n- **resource_attributes**: Attributes of the resource being accessed\n\n**Response:**\n- PERMIT: Action is allowed\n- DENY: Action is denied\n- INDETERMINATE: Unable to make decision\n\n**Use Cases:**\n- Real-time access control decisions\n- Policy enforcement at runtime\n- Audit and compliance logging"
           },
@@ -1679,8 +2654,13 @@
             },
             "url": {
               "raw": "{{base_url}}/authorization.AuthorizationService/GetDecisions",
-              "host": ["{{base_url}}"],
-              "path": ["authorization.AuthorizationService", "GetDecisions"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "authorization.AuthorizationService",
+                "GetDecisions"
+              ]
             },
             "description": "Request multiple authorization decisions in a single call.\n\nChecks if user can both DECRYPT and TRANSMIT the resource."
           },
@@ -1702,8 +2682,13 @@
             },
             "url": {
               "raw": "{{base_url}}/authorization.AuthorizationService/GetDecisionsByToken",
-              "host": ["{{base_url}}"],
-              "path": ["authorization.AuthorizationService", "GetDecisionsByToken"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "authorization.AuthorizationService",
+                "GetDecisionsByToken"
+              ]
             },
             "description": "Request authorization decisions using the authenticated user's token.\n\n**Simpler than GetDecisions:**\n- Entity information extracted from auth token\n- No need to specify entity_chain\n- Uses bearer token for authentication\n\n**Decision Request:**\n- **actions**: What action is being requested\n- **resource_attributes**: Attributes of the resource being accessed\n\n**Response:**\n- PERMIT: Action is allowed\n- DENY: Action is denied\n- INDETERMINATE: Unable to make decision"
           },
@@ -1725,8 +2710,13 @@
             },
             "url": {
               "raw": "{{base_url}}/authorization.AuthorizationService/GetEntitlements",
-              "host": ["{{base_url}}"],
-              "path": ["authorization.AuthorizationService", "GetEntitlements"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "authorization.AuthorizationService",
+                "GetEntitlements"
+              ]
             },
             "description": "Retrieve all entitlements for a user or entity.\n\n**Returns:**\n- All attribute values the entity can access\n- Actions permitted for each attribute\n- Effective permissions based on subject mappings\n\n**Scope:**\nOptionally filter entitlements to specific attributes.\n\n**Use Cases:**\n- Display available data to users\n- Client-side access control\n- User permission auditing"
           },
@@ -1734,6 +2724,158 @@
         }
       ],
       "description": "Authorization Service - Real-time authorization decisions and entitlement queries"
+    },
+    {
+      "name": "Entity Resolution Service",
+      "item": [
+        {
+          "name": "CreateEntityChainFromJwt",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tokens\": [\n    {\n      \"jwt\": \"eyJhbGc...\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/entityresolution.EntityResolutionService/CreateEntityChainFromJwt",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entityresolution.EntityResolutionService",
+                "CreateEntityChainFromJwt"
+              ]
+            },
+            "description": "Create an entity chain from JWT tokens.\n\n**Purpose:**\nConstruct a chain of entities from JWT tokens for authorization and policy evaluation.\n\n**Request Fields:**\n- `tokens`: Array of JWT tokens to process\n\n**Use Cases:**\n- Entity chain construction for authorization\n- Multi-level authentication\n- Delegated access scenarios"
+          },
+          "response": []
+        },
+        {
+          "name": "ResolveEntities",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entities\": [\n    {\n      \"id\": \"user@example.com\",\n      \"entity_type\": \"user\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/entityresolution.EntityResolutionService/ResolveEntities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "entityresolution.EntityResolutionService",
+                "ResolveEntities"
+              ]
+            },
+            "description": "Resolve entities to their attributes and properties.\n\n**Purpose:**\nRetrieve detailed information about entities including their attributes, roles, and permissions.\n\n**Request Fields:**\n- `entities`: Array of entities to resolve\n  - `id`: Entity identifier (e.g., email, username)\n  - `entity_type`: Type of entity (e.g., user, service, group)\n\n**Returns:**\n- Entity attributes and properties\n- Associated roles and permissions\n- Entity metadata\n\n**Use Cases:**\n- Entity attribute lookup\n- User profile resolution\n- Permission discovery"
+          },
+          "response": []
+        }
+      ],
+      "description": "Entity Resolution Service - Resolve and manage entity chains and attributes"
+    },
+    {
+      "name": "Shared Service",
+      "item": [
+        {
+          "name": "GetMyEntitlements",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entities\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/shared.v1.SharedService/GetMyEntitlements",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "shared.v1.SharedService",
+                "GetMyEntitlements"
+              ]
+            },
+            "description": "Retrieve entitlements for the authenticated user.\n\n**Purpose:**\nGet all entitlements and permissions for the current user based on their authentication token.\n\n**Request Fields:**\n- `entities`: Optional array of entities to scope entitlements\n\n**Returns:**\n- User's attribute value entitlements\n- Permitted actions for each attribute\n- Effective permissions\n\n**Use Cases:**\n- User permission discovery\n- Client-side access control\n- UI permission filtering\n- Entitlement auditing"
+          },
+          "response": []
+        },
+        {
+          "name": "TransformToICTDF",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tdf\": \"<base64-encoded-tdf>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/shared.v1.SharedService/TransformToICTDF",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "shared.v1.SharedService",
+                "TransformToICTDF"
+              ]
+            },
+            "description": "Transform a TDF to ICTDF (Intelligence Community TDF) format.\n\n**Purpose:**\nConvert TDF (Trusted Data Format) files to ICTDF format for Intelligence Community standards compliance.\n\n**Request Fields:**\n- `tdf`: Base64-encoded TDF content\n\n**Returns:**\n- ICTDF-formatted data\n\n**Use Cases:**\n- IC compliance\n- Cross-classification domain exchange\n- Standard format conversion"
+          },
+          "response": []
+        },
+        {
+          "name": "TransformToZTDF",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tdf\": \"<base64-encoded-tdf>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/shared.v1.SharedService/TransformToZTDF",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "shared.v1.SharedService",
+                "TransformToZTDF"
+              ]
+            },
+            "description": "Transform a TDF to ZTDF (ZIP-based TDF) format.\n\n**Purpose:**\nConvert TDF files to ZTDF format, which uses ZIP compression for efficient storage and transmission.\n\n**Request Fields:**\n- `tdf`: Base64-encoded TDF content\n\n**Returns:**\n- ZTDF-formatted data (ZIP-compressed)\n\n**Use Cases:**\n- File size optimization\n- Bandwidth-constrained environments\n- Legacy system compatibility"
+          },
+          "response": []
+        }
+      ],
+      "description": "Shared Service - Common utility operations including entitlements and TDF transformations"
     },
     {
       "name": "Tagging PDP Service",
@@ -1754,8 +2896,13 @@
             },
             "url": {
               "raw": "{{base_url}}/tagging.pdp.v2.TaggingPDPService/Tag",
-              "host": ["{{base_url}}"],
-              "path": ["tagging.pdp.v2.TaggingPDPService", "Tag"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tagging.pdp.v2.TaggingPDPService",
+                "Tag"
+              ]
             },
             "description": "Process content items through the PDP to produce tags.\n\n**Request Fields:**\n- `items`: Array of ContentItem objects\n- `type`: Optional top-level content type\n- `options`: TagRequestOptions with processing mode\n\n**Modes:**\n- ALL: Process all stages\n- TAG_EXTRACT: Content extraction + tag extraction\n- TAG_EXTRACT_AND_PROCESS: Extraction + processing\n- EXTRACT_GENERATE_TOKENS: Generate encrypted tokens"
           },
@@ -1777,8 +2924,13 @@
             },
             "url": {
               "raw": "{{base_url}}/tagging.pdp.v2.TaggingPDPService/TagPerContentItem",
-              "host": ["{{base_url}}"],
-              "path": ["tagging.pdp.v2.TaggingPDPService", "TagPerContentItem"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tagging.pdp.v2.TaggingPDPService",
+                "TagPerContentItem"
+              ]
             },
             "description": "Process content items and return tags per individual content item plus cross-content tags."
           },
@@ -1800,10 +2952,44 @@
             },
             "url": {
               "raw": "{{base_url}}/tagging.pdp.v2.TaggingPDPService/ProcessTags",
-              "host": ["{{base_url}}"],
-              "path": ["tagging.pdp.v2.TaggingPDPService", "ProcessTags"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tagging.pdp.v2.TaggingPDPService",
+                "ProcessTags"
+              ]
             },
             "description": "Process tags to generate assertions or encrypted search tokens."
+          },
+          "response": []
+        },
+        {
+          "name": "TagStream",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"desc\": {\n        \"type\": \"application/pdf\",\n        \"id\": \"stream-doc-1\"\n      },\n      \"binary\": \"JVBERi0xLjQKJeLjz9MKMSAwIG9iago8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFI+PgplbmRvYmoKMiAwIG9iago8PC9UeXBlL1BhZ2VzL0NvdW50IDAvS2lkc1tdPj4KZW5kb2JqCnhyZWYKMCAzCjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAxNSAwMDAwMCBuIAowMDAwMDAwMDYwIDAwMDAwIG4gCnRyYWlsZXIKPDwvUm9vdCAxIDAgUi9TaXplIDM+PgpzdGFydHhyZWYKMTA3CiUlRU9GCg==\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tagging.pdp.v2.TaggingPDPService/TagStream",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tagging.pdp.v2.TaggingPDPService",
+                "TagStream"
+              ]
+            },
+            "description": "Stream content for tagging - server streaming RPC.\n\nThis method processes content in a streaming fashion, allowing large files to be tagged without loading entirely into memory. The server streams back tagging results as content is processed.\n\n**Use Cases:**\n- Tag large documents efficiently\n- Real-time content classification\n- Stream-based content analysis\n- Process multiple content chunks\n\n**Important Notes:**\n- This is a server streaming RPC endpoint\n- May not work optimally with regular HTTP/JSON clients\n- Best accessed via pure gRPC clients with streaming support\n- Consider using non-streaming `Tag` methods for simpler use cases\n\n**Content Format:**\n- `desc.type`: MIME type of content (e.g., 'application/pdf', 'text/plain')\n- `desc.id`: Unique identifier for tracking\n- `binary`: Base64-encoded content chunk\n\n**Parameters:**\n- `items`: Array of content items to process\n- Each item contains description and binary data\n\n**Returns (streamed):**\n- Tag results as content is processed\n- Classification labels and confidence scores\n- Processing metadata"
           },
           "response": []
         }
@@ -1829,8 +3015,13 @@
             },
             "url": {
               "raw": "{{base_url}}/policyimportexport.v1.PolicyArtifactService/CreateImportArtifacts",
-              "host": ["{{base_url}}"],
-              "path": ["policyimportexport.v1.PolicyArtifactService", "CreateImportArtifacts"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "policyimportexport.v1.PolicyArtifactService",
+                "CreateImportArtifacts"
+              ]
             },
             "description": "Import policy artifacts in unbundled YAML format."
           },
@@ -1852,8 +3043,13 @@
             },
             "url": {
               "raw": "{{base_url}}/policyimportexport.v1.PolicyArtifactService/CreateExportArtifacts",
-              "host": ["{{base_url}}"],
-              "path": ["policyimportexport.v1.PolicyArtifactService", "CreateExportArtifacts"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "policyimportexport.v1.PolicyArtifactService",
+                "CreateExportArtifacts"
+              ]
             },
             "description": "Export policy artifacts for a specific namespace."
           },
@@ -1881,8 +3077,13 @@
             },
             "url": {
               "raw": "{{base_url}}/kas.nanotdf.v1.NanoTDFRewrapService/Rewrap",
-              "host": ["{{base_url}}"],
-              "path": ["kas.nanotdf.v1.NanoTDFRewrapService", "Rewrap"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "kas.nanotdf.v1.NanoTDFRewrapService",
+                "Rewrap"
+              ]
             },
             "description": "Rewrap NanoTDF headers to obtain KAS-wrapped keys."
           },

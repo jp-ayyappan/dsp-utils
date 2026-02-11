@@ -191,27 +191,27 @@ Try **Policy Service → Namespaces → List Namespaces** to verify everything w
 
 ## Services Included
 
-**Total: 64 endpoints across 8 services**
+**Total: 94 endpoints across 11 services** (HTTP/gRPC-gateway accessible)
 
 ### 1. Authentication (3 endpoints)
 - Get Access Token (Password Grant, Client Credentials)
 - Refresh Token
 
-### 2. Policy Service (47 endpoints)
+### 2. Policy Service (67 endpoints)
 
-**Namespaces (5):** Create, List, Get, Update, Deactivate
+**Namespaces (11):** Create, List, Get, Update, Deactivate, AssignPublicKey, RemovePublicKey, AssignCertificate, RemoveCertificate, Assign/RemoveKAS (deprecated)
 
-**Attributes (6):** Create, List, Get, Update, Deactivate, GetAttributeValuesByFqns
+**Attributes (14):** Create, List, Get, Update, Deactivate, GetByFqns, AssignPublicKey (attribute/value), RemovePublicKey (attribute/value), Assign/RemoveKAS (deprecated)
 
 **Attribute Values (8):** Create (with examples for Secret/TopSecret/Confidential), List, Get, Update, Deactivate
 
-**Subject Mappings (7):** Match, Create (with/without new subjects), List, Get, Update, Delete
+**Subject Mappings (8):** Match, Create (with/without new subjects), List, Get, Update, Delete, DeleteAllUnmapped
 
 **Resource Mappings (10):** CreateGroup, ListGroups, GetGroup, UpdateGroup, DeleteGroup, Create, List, Get, Update, Delete
 
 **Subject Condition Sets (5):** Create, List, Get, Update, Delete
 
-**Key Access Servers (6):** Create (remote/local key), List, Get, Update, Delete
+**Key Access Servers (15):** Create (remote/local key), List, Get, Update, Delete, CreateKey, GetKey, ListKeys, UpdateKey, RotateKey, SetBaseKey, GetBaseKey, ListKeyMappings
 
 ### 3. KAS Service (3 endpoints)
 - Rewrap
@@ -226,17 +226,31 @@ Try **Policy Service → Namespaces → List Namespaces** to verify everything w
 - GetDecisionsByToken
 - GetEntitlements
 
-### 6. Tagging PDP Service (3 endpoints)
+### 6. Entity Resolution Service (2 endpoints)
+- CreateEntityChainFromJwt
+- ResolveEntities
+
+### 7. Shared Service v1 (3 endpoints)
+- GetMyEntitlements
+- TransformToICTDF
+- TransformToZTDF
+
+### 8. Tagging PDP Service (4 endpoints)
 - Tag Content Items
 - Tag Per Content Item
 - Process Tags
+- TagStream (streaming RPC)
 
-### 7. Policy Artifact Service (2 endpoints)
+### 9. Policy Artifact Service (2 endpoints)
 - Import Policy (Unbundled)
 - Export Policy (Unbundled)
 
-### 8. NanoTDF Rewrap Service (1 endpoint)
+### 10. NanoTDF Rewrap Service (1 endpoint)
 - Rewrap NanoTDF Headers
+
+---
+
+**Note:** Additional services are available via pure gRPC (grpcurl) but may not have HTTP/JSON endpoints. Run `/postman/test_http_support.sh` to test HTTP support for other services.
 
 ## Proto Files
 
