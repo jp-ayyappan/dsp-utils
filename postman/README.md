@@ -191,13 +191,13 @@ Try **Policy Service → Namespaces → List Namespaces** to verify everything w
 
 ## Services Included
 
-**Total: 94 endpoints across 11 services** (HTTP/gRPC-gateway accessible)
+**Total: 151 endpoints across 16 services** (HTTP/gRPC-gateway accessible)
 
 ### 1. Authentication (3 endpoints)
 - Get Access Token (Password Grant, Client Credentials)
 - Refresh Token
 
-### 2. Policy Service (67 endpoints)
+### 2. Policy Service (102 endpoints)
 
 **Namespaces (11):** Create, List, Get, Update, Deactivate, AssignPublicKey, RemovePublicKey, AssignCertificate, RemoveCertificate, Assign/RemoveKAS (deprecated)
 
@@ -213,6 +213,14 @@ Try **Policy Service → Namespaces → List Namespaces** to verify everything w
 
 **Key Access Servers (15):** Create (remote/local key), List, Get, Update, Delete, CreateKey, GetKey, ListKeys, UpdateKey, RotateKey, SetBaseKey, GetBaseKey, ListKeyMappings
 
+**Actions (5):** Create, List, Get, Update, Delete
+
+**Registered Resources (11):** Full CRUD for resources and values, GetByFQNs
+
+**Key Management (5):** Provider config management (AWS KMS, Azure Key Vault, etc.)
+
+**Obligations (14):** Create, List, Get, Update, Delete (obligations/values), Add/Remove triggers, GetByFQNs
+
 ### 3. KAS Service (3 endpoints)
 - Rewrap
 - PublicKey (POST)
@@ -221,36 +229,53 @@ Try **Policy Service → Namespaces → List Namespaces** to verify everything w
 ### 4. WellKnown Service (1 endpoint)
 - GetWellKnownConfiguration
 
-### 5. Authorization Service (4 endpoints)
-- GetDecisions (single/multiple actions)
-- GetDecisionsByToken
-- GetEntitlements
+### 5. Authorization Service (8 endpoints)
+- **v1 (4):** GetDecisions (single/multiple actions), GetDecisionsByToken, GetEntitlements
+- **v2 (4):** GetDecision, GetDecisionBulk, GetDecisionMultiResource, GetEntitlements
 
-### 6. Entity Resolution Service (2 endpoints)
-- CreateEntityChainFromJwt
-- ResolveEntities
+### 6. Entity Resolution Service (4 endpoints)
+- **v1 (2):** CreateEntityChainFromJwt, ResolveEntities
+- **v2 (2):** CreateEntityChainsFromTokens, ResolveEntities
 
 ### 7. Shared Service v1 (3 endpoints)
 - GetMyEntitlements
 - TransformToICTDF
 - TransformToZTDF
 
-### 8. Tagging PDP Service (4 endpoints)
+### 8. Config Service (8 endpoints)
+- KAS, Outlook, Secure Viewer, Tagging PDP configuration (Get/Set for each)
+
+### 9. Web Admin Config Service (2 endpoints)
+- ListAllConfig
+- HasConfigChanges
+
+### 10. Certificate Service (3 endpoints)
+- AssignCertificateToNamespace
+- ListCertificatesByNamespace
+- RemoveCertificateFromNamespace
+
+### 11. Tagging PDP Service (4 endpoints)
 - Tag Content Items
 - Tag Per Content Item
 - Process Tags
 - TagStream (streaming RPC)
 
-### 9. Policy Artifact Service (2 endpoints)
+### 12. Policy Artifact Service (2 endpoints)
 - Import Policy (Unbundled)
 - Export Policy (Unbundled)
 
-### 10. NanoTDF Rewrap Service (1 endpoint)
+### 13. NanoTDF Rewrap Service (1 endpoint)
 - Rewrap NanoTDF Headers
+
+### 14. Version Service (1 endpoint)
+- GetVersion (platform version info)
+
+### 15. Health Check Service (3 endpoints)
+- Check, List, Watch (service health monitoring)
 
 ---
 
-**Note:** Additional services are available via pure gRPC (grpcurl) but may not have HTTP/JSON endpoints. Run `/postman/test_http_support.sh` to test HTTP support for other services.
+**Note:** One service is gRPC-only: `shared.v2.SharedService`. All other services listed above support HTTP/JSON via gRPC-gateway.
 
 ## Proto Files
 

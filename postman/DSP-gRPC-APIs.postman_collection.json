@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Virtru DSP gRPC APIs",
-    "description": "Comprehensive collection for interacting with Virtru Data Security Platform gRPC endpoints.\n\n**Services Included:**\n- Authentication (Keycloak OAuth)\n- Policy Service (Namespaces, Attributes, Values, Subject Mappings, Resource Mappings, Subject Condition Sets, Key Access Servers)\n- KAS Service (Rewrap, PublicKey)\n- Wellknown Service (Configuration)\n- Authorization Service (Decisions, DecisionsByToken, Entitlements)\n- Entity Resolution Service (CreateEntityChainFromJwt, ResolveEntities)\n- Shared Service (GetMyEntitlements, TransformToICTDF, TransformToZTDF)\n- Tagging PDP Service (v2)\n- Policy Artifact Service (v1)\n- NanoTDF Rewrap Service (v1)\n\n**Authentication:**\n1. Configure Keycloak variables in the Variables tab\n2. Run 'Get Access Token' request to authenticate\n3. Token is automatically saved and used for all subsequent requests\n4. Token auto-refresh on expiry",
+    "description": "Comprehensive collection for interacting with Virtru Data Security Platform gRPC endpoints.\n\n**Services Included:**\n- Authentication (Keycloak OAuth)\n- Policy Service (Namespaces, Attributes, Values, Subject Mappings, Resource Mappings, Subject Condition Sets, Key Access Servers)\n- KAS Service (Rewrap, PublicKey)\n- Wellknown Service (Configuration)\n- Authorization Service (Decisions, DecisionsByToken, Entitlements)\n- Entity Resolution Service (CreateEntityChainFromJwt, ResolveEntities)\n- Shared Service (GetMyEntitlements, TransformToICTDF, TransformToZTDF)\n- Tagging PDP Service (v2)\n- Policy Artifact Service (v1)\n- NanoTDF Rewrap Service (v1)\n\n- Policy Actions Service\n- Policy Registered Resources Service\n- Policy Key Management Service\n- Policy Obligations Service\n- Authorization Service v2\n- Entity Resolution Service v2\n- Config Service (KAS, Outlook, Secure Viewer, Tagging PDP)\n- Web Admin Config Service\n- Certificate Service\n- Version Service\n- Health Check Service\n\n**Authentication:**\n1. Configure Keycloak variables in the Variables tab\n2. Run 'Get Access Token' request to authenticate\n3. Token is automatically saved and used for all subsequent requests\n4. Token auto-refresh on expiry",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -2479,6 +2479,1006 @@
             }
           ],
           "description": "Key Access Server management - Register and manage KAS instances"
+        },
+        {
+          "name": "Policy Actions",
+          "item": [
+            {
+              "name": "CreateAction",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"standard\": \"STANDARD_ACTION_TRANSMIT\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.actions.ActionService/CreateAction",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.actions.ActionService",
+                    "CreateAction"
+                  ]
+                },
+                "description": "Create a new policy action.\n\nActions define what operations can be performed on data (e.g., TRANSMIT, DECRYPT, ENCRYPT)."
+              },
+              "response": []
+            },
+            {
+              "name": "ListActions",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.actions.ActionService/ListActions",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.actions.ActionService",
+                    "ListActions"
+                  ]
+                },
+                "description": "List all policy actions.\n\nReturns all available actions configured in the system."
+              },
+              "response": []
+            },
+            {
+              "name": "GetAction",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"action-uuid\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.actions.ActionService/GetAction",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.actions.ActionService",
+                    "GetAction"
+                  ]
+                },
+                "description": "Get a specific policy action by ID.\n\nRetrieve details of a single action."
+              },
+              "response": []
+            },
+            {
+              "name": "UpdateAction",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"action-uuid\",\n  \"standard\": \"STANDARD_ACTION_DECRYPT\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.actions.ActionService/UpdateAction",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.actions.ActionService",
+                    "UpdateAction"
+                  ]
+                },
+                "description": "Update an existing policy action.\n\nModify the action type or other properties."
+              },
+              "response": []
+            },
+            {
+              "name": "DeleteAction",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"action-uuid\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.actions.ActionService/DeleteAction",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.actions.ActionService",
+                    "DeleteAction"
+                  ]
+                },
+                "description": "Delete a policy action.\n\nRemoves the action from the system."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Policy Registered Resources",
+          "item": [
+            {
+              "name": "CreateRegisteredResource",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"DataClassification\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.registeredresources.RegisteredResourcesService/CreateRegisteredResource",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.registeredresources.RegisteredResourcesService",
+                    "CreateRegisteredResource"
+                  ]
+                },
+                "description": "Create a new registered resource.\n\nRegistered resources define resource types that can be used in policies."
+              },
+              "response": []
+            },
+            {
+              "name": "ListRegisteredResources",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.registeredresources.RegisteredResourcesService/ListRegisteredResources",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.registeredresources.RegisteredResourcesService",
+                    "ListRegisteredResources"
+                  ]
+                },
+                "description": "List all registered resources.\n\nReturns all resource types configured in the system."
+              },
+              "response": []
+            },
+            {
+              "name": "GetRegisteredResource",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"resource-uuid\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.registeredresources.RegisteredResourcesService/GetRegisteredResource",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.registeredresources.RegisteredResourcesService",
+                    "GetRegisteredResource"
+                  ]
+                },
+                "description": "Get a specific registered resource by ID.\n\nRetrieve details of a single resource type."
+              },
+              "response": []
+            },
+            {
+              "name": "UpdateRegisteredResource",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"resource-uuid\",\n  \"name\": \"UpdatedDataClassification\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.registeredresources.RegisteredResourcesService/UpdateRegisteredResource",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.registeredresources.RegisteredResourcesService",
+                    "UpdateRegisteredResource"
+                  ]
+                },
+                "description": "Update an existing registered resource.\n\nModify the resource type properties."
+              },
+              "response": []
+            },
+            {
+              "name": "DeleteRegisteredResource",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"resource-uuid\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.registeredresources.RegisteredResourcesService/DeleteRegisteredResource",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.registeredresources.RegisteredResourcesService",
+                    "DeleteRegisteredResource"
+                  ]
+                },
+                "description": "Delete a registered resource.\n\nRemoves the resource type from the system."
+              },
+              "response": []
+            },
+            {
+              "name": "CreateRegisteredResourceValue",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"registered_resource_id\": \"resource-uuid\",\n  \"value\": \"Confidential\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.registeredresources.RegisteredResourcesService/CreateRegisteredResourceValue",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.registeredresources.RegisteredResourcesService",
+                    "CreateRegisteredResourceValue"
+                  ]
+                },
+                "description": "Create a new value for a registered resource.\n\nAdd a specific value option to a resource type."
+              },
+              "response": []
+            },
+            {
+              "name": "ListRegisteredResourceValues",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"registered_resource_id\": \"resource-uuid\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.registeredresources.RegisteredResourcesService/ListRegisteredResourceValues",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.registeredresources.RegisteredResourcesService",
+                    "ListRegisteredResourceValues"
+                  ]
+                },
+                "description": "List all values for a registered resource.\n\nReturns all available values for a specific resource type."
+              },
+              "response": []
+            },
+            {
+              "name": "GetRegisteredResourceValue",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"value-uuid\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.registeredresources.RegisteredResourcesService/GetRegisteredResourceValue",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.registeredresources.RegisteredResourcesService",
+                    "GetRegisteredResourceValue"
+                  ]
+                },
+                "description": "Get a specific registered resource value by ID.\n\nRetrieve details of a single resource value."
+              },
+              "response": []
+            },
+            {
+              "name": "GetRegisteredResourceValuesByFQNs",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fqns\": [\"https://example.com/resource/DataClassification/Confidential\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.registeredresources.RegisteredResourcesService/GetRegisteredResourceValuesByFQNs",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.registeredresources.RegisteredResourcesService",
+                    "GetRegisteredResourceValuesByFQNs"
+                  ]
+                },
+                "description": "Get registered resource values by fully qualified names (FQNs).\n\nRetrieve multiple values using their complete URIs."
+              },
+              "response": []
+            },
+            {
+              "name": "UpdateRegisteredResourceValue",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"value-uuid\",\n  \"value\": \"TopSecret\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.registeredresources.RegisteredResourcesService/UpdateRegisteredResourceValue",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.registeredresources.RegisteredResourcesService",
+                    "UpdateRegisteredResourceValue"
+                  ]
+                },
+                "description": "Update an existing registered resource value.\n\nModify a value's properties."
+              },
+              "response": []
+            },
+            {
+              "name": "DeleteRegisteredResourceValue",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"value-uuid\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.registeredresources.RegisteredResourcesService/DeleteRegisteredResourceValue",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.registeredresources.RegisteredResourcesService",
+                    "DeleteRegisteredResourceValue"
+                  ]
+                },
+                "description": "Delete a registered resource value.\n\nRemoves the value from the system."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Policy Key Management",
+          "item": [
+            {
+              "name": "CreateProviderConfig",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"aws-kms\",\n  \"provider_type\": \"AWS_KMS\",\n  \"config\": {}\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.keymanagement.KeyManagementService/CreateProviderConfig",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.keymanagement.KeyManagementService",
+                    "CreateProviderConfig"
+                  ]
+                },
+                "description": "Create a new key provider configuration.\n\nConfigure a key management provider (e.g., AWS KMS, Azure Key Vault)."
+              },
+              "response": []
+            },
+            {
+              "name": "ListProviderConfigs",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.keymanagement.KeyManagementService/ListProviderConfigs",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.keymanagement.KeyManagementService",
+                    "ListProviderConfigs"
+                  ]
+                },
+                "description": "List all key provider configurations.\n\nReturns all configured key management providers."
+              },
+              "response": []
+            },
+            {
+              "name": "GetProviderConfig",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"config-uuid\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.keymanagement.KeyManagementService/GetProviderConfig",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.keymanagement.KeyManagementService",
+                    "GetProviderConfig"
+                  ]
+                },
+                "description": "Get a specific key provider configuration by ID.\n\nRetrieve details of a single provider configuration."
+              },
+              "response": []
+            },
+            {
+              "name": "UpdateProviderConfig",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"config-uuid\",\n  \"name\": \"aws-kms-updated\",\n  \"config\": {}\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.keymanagement.KeyManagementService/UpdateProviderConfig",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.keymanagement.KeyManagementService",
+                    "UpdateProviderConfig"
+                  ]
+                },
+                "description": "Update an existing key provider configuration.\n\nModify provider settings."
+              },
+              "response": []
+            },
+            {
+              "name": "DeleteProviderConfig",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"config-uuid\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.keymanagement.KeyManagementService/DeleteProviderConfig",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.keymanagement.KeyManagementService",
+                    "DeleteProviderConfig"
+                  ]
+                },
+                "description": "Delete a key provider configuration.\n\nRemoves the provider configuration from the system."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Policy Obligations",
+          "item": [
+            {
+              "name": "CreateObligation",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"WatermarkRequired\",\n  \"rule\": \"ALL_OF\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.obligations.Service/CreateObligation",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.obligations.Service",
+                    "CreateObligation"
+                  ]
+                },
+                "description": "Create a new obligation.\n\nObligations define requirements that must be met (e.g., watermarking, logging)."
+              },
+              "response": []
+            },
+            {
+              "name": "ListObligations",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.obligations.Service/ListObligations",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.obligations.Service",
+                    "ListObligations"
+                  ]
+                },
+                "description": "List all obligations.\n\nReturns all configured obligations in the system."
+              },
+              "response": []
+            },
+            {
+              "name": "GetObligation",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"obligation-uuid\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.obligations.Service/GetObligation",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.obligations.Service",
+                    "GetObligation"
+                  ]
+                },
+                "description": "Get a specific obligation by ID.\n\nRetrieve details of a single obligation."
+              },
+              "response": []
+            },
+            {
+              "name": "GetObligationsByFQNs",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fqns\": [\"https://example.com/obligation/WatermarkRequired\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.obligations.Service/GetObligationsByFQNs",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.obligations.Service",
+                    "GetObligationsByFQNs"
+                  ]
+                },
+                "description": "Get obligations by fully qualified names (FQNs).\n\nRetrieve multiple obligations using their complete URIs."
+              },
+              "response": []
+            },
+            {
+              "name": "DeleteObligation",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"obligation-uuid\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.obligations.Service/DeleteObligation",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.obligations.Service",
+                    "DeleteObligation"
+                  ]
+                },
+                "description": "Delete an obligation.\n\nRemoves the obligation from the system."
+              },
+              "response": []
+            },
+            {
+              "name": "CreateObligationValue",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"obligation_id\": \"obligation-uuid\",\n  \"value\": \"watermark-text\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.obligations.Service/CreateObligationValue",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.obligations.Service",
+                    "CreateObligationValue"
+                  ]
+                },
+                "description": "Create a new value for an obligation.\n\nAdd a specific value option to an obligation."
+              },
+              "response": []
+            },
+            {
+              "name": "GetObligationValue",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"value-uuid\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.obligations.Service/GetObligationValue",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.obligations.Service",
+                    "GetObligationValue"
+                  ]
+                },
+                "description": "Get a specific obligation value by ID.\n\nRetrieve details of a single obligation value."
+              },
+              "response": []
+            },
+            {
+              "name": "GetObligationValuesByFQNs",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fqns\": [\"https://example.com/obligation/WatermarkRequired/watermark-text\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.obligations.Service/GetObligationValuesByFQNs",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.obligations.Service",
+                    "GetObligationValuesByFQNs"
+                  ]
+                },
+                "description": "Get obligation values by fully qualified names (FQNs).\n\nRetrieve multiple values using their complete URIs."
+              },
+              "response": []
+            },
+            {
+              "name": "DeleteObligationValue",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"value-uuid\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.obligations.Service/DeleteObligationValue",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.obligations.Service",
+                    "DeleteObligationValue"
+                  ]
+                },
+                "description": "Delete an obligation value.\n\nRemoves the value from the system."
+              },
+              "response": []
+            },
+            {
+              "name": "UpdateObligation",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"obligation-uuid\",\n  \"name\": \"UpdatedWatermarkRequired\",\n  \"rule\": \"ANY_OF\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.obligations.Service/UpdateObligation",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.obligations.Service",
+                    "UpdateObligation"
+                  ]
+                },
+                "description": "Update an existing obligation.\n\nModify obligation properties."
+              },
+              "response": []
+            },
+            {
+              "name": "UpdateObligationValue",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"value-uuid\",\n  \"value\": \"updated-watermark-text\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.obligations.Service/UpdateObligationValue",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.obligations.Service",
+                    "UpdateObligationValue"
+                  ]
+                },
+                "description": "Update an existing obligation value.\n\nModify a value's properties."
+              },
+              "response": []
+            },
+            {
+              "name": "AddObligationTrigger",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"obligation_id\": \"obligation-uuid\",\n  \"action\": \"TRANSMIT\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.obligations.Service/AddObligationTrigger",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.obligations.Service",
+                    "AddObligationTrigger"
+                  ]
+                },
+                "description": "Add a trigger to an obligation.\n\nDefine which actions trigger this obligation (e.g., TRANSMIT, DECRYPT)."
+              },
+              "response": []
+            },
+            {
+              "name": "RemoveObligationTrigger",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"obligation_id\": \"obligation-uuid\",\n  \"action\": \"TRANSMIT\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.obligations.Service/RemoveObligationTrigger",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.obligations.Service",
+                    "RemoveObligationTrigger"
+                  ]
+                },
+                "description": "Remove a trigger from an obligation.\n\nRemove an action trigger from this obligation."
+              },
+              "response": []
+            },
+            {
+              "name": "ListObligationTriggers",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"obligation_id\": \"obligation-uuid\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.obligations.Service/ListObligationTriggers",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "policy.obligations.Service",
+                    "ListObligationTriggers"
+                  ]
+                },
+                "description": "List all triggers for an obligation.\n\nReturns all actions that trigger this obligation."
+              },
+              "response": []
+            }
+          ]
         }
       ],
       "description": "Policy Service - Comprehensive policy and attribute management\n\n**Complete Workflow:**\n1. Create Namespace\n2. Create Attribute\n3. Create Attribute Values\n4. Create Subject Mappings (who can access)\n5. Create Resource Mappings (auto-classification rules)\n\nThis establishes a complete data classification and access control policy."
@@ -2721,6 +3721,123 @@
             "description": "Retrieve all entitlements for a user or entity.\n\n**Returns:**\n- All attribute values the entity can access\n- Actions permitted for each attribute\n- Effective permissions based on subject mappings\n\n**Scope:**\nOptionally filter entitlements to specific attributes.\n\n**Use Cases:**\n- Display available data to users\n- Client-side access control\n- User permission auditing"
           },
           "response": []
+        },
+        {
+          "name": "Authorization Service v2",
+          "item": [
+            {
+              "name": "GetDecision (v2)",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"TRANSMIT\",\n  \"resource_attributes\": [\"https://example.com/attr/Classification/Secret\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/authorization.v2.AuthorizationService/GetDecision",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "authorization.v2.AuthorizationService",
+                    "GetDecision"
+                  ]
+                },
+                "description": "Get an authorization decision (v2).\n\nDetermines if an action is allowed on resources with specific attributes."
+              },
+              "response": []
+            },
+            {
+              "name": "GetDecisionBulk (v2)",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"decisions\": [\n    {\n      \"action\": \"TRANSMIT\",\n      \"resource_attributes\": [\"https://example.com/attr/Classification/Secret\"]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/authorization.v2.AuthorizationService/GetDecisionBulk",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "authorization.v2.AuthorizationService",
+                    "GetDecisionBulk"
+                  ]
+                },
+                "description": "Get multiple authorization decisions in bulk (v2).\n\nEvaluate multiple authorization requests in a single call."
+              },
+              "response": []
+            },
+            {
+              "name": "GetDecisionMultiResource (v2)",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"TRANSMIT\",\n  \"resources\": [\n    {\n      \"resource_attributes\": [\"https://example.com/attr/Classification/Secret\"]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/authorization.v2.AuthorizationService/GetDecisionMultiResource",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "authorization.v2.AuthorizationService",
+                    "GetDecisionMultiResource"
+                  ]
+                },
+                "description": "Get authorization decision for multiple resources (v2).\n\nEvaluate a single action against multiple resources."
+              },
+              "response": []
+            },
+            {
+              "name": "GetEntitlements (v2)",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"entities\": []\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/authorization.v2.AuthorizationService/GetEntitlements",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "authorization.v2.AuthorizationService",
+                    "GetEntitlements"
+                  ]
+                },
+                "description": "Get entitlements for entities (v2).\n\nRetrieve all permissions and access rights for specified entities."
+              },
+              "response": []
+            }
+          ]
         }
       ],
       "description": "Authorization Service - Real-time authorization decisions and entitlement queries"
@@ -2783,6 +3900,67 @@
             "description": "Resolve entities to their attributes and properties.\n\n**Purpose:**\nRetrieve detailed information about entities including their attributes, roles, and permissions.\n\n**Request Fields:**\n- `entities`: Array of entities to resolve\n  - `id`: Entity identifier (e.g., email, username)\n  - `entity_type`: Type of entity (e.g., user, service, group)\n\n**Returns:**\n- Entity attributes and properties\n- Associated roles and permissions\n- Entity metadata\n\n**Use Cases:**\n- Entity attribute lookup\n- User profile resolution\n- Permission discovery"
           },
           "response": []
+        },
+        {
+          "name": "Entity Resolution Service v2",
+          "item": [
+            {
+              "name": "CreateEntityChainsFromTokens (v2)",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"tokens\": [\"token1\", \"token2\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/entityresolution.v2.EntityResolutionService/CreateEntityChainsFromTokens",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "entityresolution.v2.EntityResolutionService",
+                    "CreateEntityChainsFromTokens"
+                  ]
+                },
+                "description": "Create entity chains from authentication tokens (v2).\n\nResolves user/entity information from provided JWT tokens."
+              },
+              "response": []
+            },
+            {
+              "name": "ResolveEntities (v2)",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"entities\": [\n    {\n      \"id\": \"user@example.com\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/entityresolution.v2.EntityResolutionService/ResolveEntities",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "entityresolution.v2.EntityResolutionService",
+                    "ResolveEntities"
+                  ]
+                },
+                "description": "Resolve entity information (v2).\n\nExpands entity identifiers into full entity details including attributes and group memberships."
+              },
+              "response": []
+            }
+          ]
         }
       ],
       "description": "Entity Resolution Service - Resolve and manage entity chains and attributes"
@@ -3091,6 +4269,507 @@
         }
       ],
       "description": "NanoTDF Rewrap Service - Key management for NanoTDF"
+    },
+    {
+      "name": "Config Service",
+      "item": [
+        {
+          "name": "GetKASConfig",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/config.v1.ConfigService/GetKASConfig",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "config.v1.ConfigService",
+                "GetKASConfig"
+              ]
+            },
+            "description": "Get the Key Access Server (KAS) configuration.\n\nReturns current KAS configuration including endpoint and settings."
+          },
+          "response": []
+        },
+        {
+          "name": "SetKASConfig",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"config\": {\n    \"endpoint\": \"https://kas.example.com\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/config.v1.ConfigService/SetKASConfig",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "config.v1.ConfigService",
+                "SetKASConfig"
+              ]
+            },
+            "description": "Set the Key Access Server (KAS) configuration.\n\nConfigure KAS endpoint and related settings."
+          },
+          "response": []
+        },
+        {
+          "name": "GetOutlookConfig",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/config.v1.ConfigService/GetOutlookConfig",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "config.v1.ConfigService",
+                "GetOutlookConfig"
+              ]
+            },
+            "description": "Get the Outlook integration configuration.\n\nReturns current Outlook plugin configuration."
+          },
+          "response": []
+        },
+        {
+          "name": "SetOutlookConfig",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"config\": {\n    \"enabled\": true\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/config.v1.ConfigService/SetOutlookConfig",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "config.v1.ConfigService",
+                "SetOutlookConfig"
+              ]
+            },
+            "description": "Set the Outlook integration configuration.\n\nConfigure Outlook plugin settings."
+          },
+          "response": []
+        },
+        {
+          "name": "GetSecureViewerConfig",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/config.v1.ConfigService/GetSecureViewerConfig",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "config.v1.ConfigService",
+                "GetSecureViewerConfig"
+              ]
+            },
+            "description": "Get the Secure Viewer configuration.\n\nReturns current Secure Viewer settings."
+          },
+          "response": []
+        },
+        {
+          "name": "SetSecureViewerConfig",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"config\": {\n    \"enabled\": true\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/config.v1.ConfigService/SetSecureViewerConfig",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "config.v1.ConfigService",
+                "SetSecureViewerConfig"
+              ]
+            },
+            "description": "Set the Secure Viewer configuration.\n\nConfigure Secure Viewer settings and features."
+          },
+          "response": []
+        },
+        {
+          "name": "GetTaggingPDPConfig",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/config.v1.ConfigService/GetTaggingPDPConfig",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "config.v1.ConfigService",
+                "GetTaggingPDPConfig"
+              ]
+            },
+            "description": "Get the Tagging PDP (Policy Decision Point) configuration.\n\nReturns current tagging PDP settings."
+          },
+          "response": []
+        },
+        {
+          "name": "SetTaggingPDPConfig",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"config\": {\n    \"enabled\": true\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/config.v1.ConfigService/SetTaggingPDPConfig",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "config.v1.ConfigService",
+                "SetTaggingPDPConfig"
+              ]
+            },
+            "description": "Set the Tagging PDP (Policy Decision Point) configuration.\n\nConfigure tagging PDP settings."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Web Admin Config Service",
+      "item": [
+        {
+          "name": "ListAllConfig",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/webadmin.v1.ConfigService/ListAllConfig",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webadmin.v1.ConfigService",
+                "ListAllConfig"
+              ]
+            },
+            "description": "List all configuration settings.\n\nReturns all configuration across the web admin interface."
+          },
+          "response": []
+        },
+        {
+          "name": "HasConfigChanges",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/webadmin.v1.ConfigService/HasConfigChanges",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "webadmin.v1.ConfigService",
+                "HasConfigChanges"
+              ]
+            },
+            "description": "Check if there are pending configuration changes.\n\nReturns whether any unsaved configuration changes exist."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Certificate Service",
+      "item": [
+        {
+          "name": "AssignCertificateToNamespace",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"namespace_id\": \"namespace-uuid\",\n  \"certificate\": \"-----BEGIN CERTIFICATE-----\\n...\\n-----END CERTIFICATE-----\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/virtru.policy.certificates.v1.CertificateService/AssignCertificateToNamespace",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "virtru.policy.certificates.v1.CertificateService",
+                "AssignCertificateToNamespace"
+              ]
+            },
+            "description": "Assign a certificate to a namespace.\n\nAssociates an X.509 certificate with a specific namespace for cryptographic operations."
+          },
+          "response": []
+        },
+        {
+          "name": "ListCertificatesByNamespace",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"namespace_id\": \"namespace-uuid\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/virtru.policy.certificates.v1.CertificateService/ListCertificatesByNamespace",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "virtru.policy.certificates.v1.CertificateService",
+                "ListCertificatesByNamespace"
+              ]
+            },
+            "description": "List all certificates assigned to a namespace.\n\nReturns all certificates associated with the specified namespace."
+          },
+          "response": []
+        },
+        {
+          "name": "RemoveCertificateFromNamespace",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"namespace_id\": \"namespace-uuid\",\n  \"certificate_id\": \"cert-uuid\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/virtru.policy.certificates.v1.CertificateService/RemoveCertificateFromNamespace",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "virtru.policy.certificates.v1.CertificateService",
+                "RemoveCertificateFromNamespace"
+              ]
+            },
+            "description": "Remove a certificate from a namespace.\n\nDisassociates a certificate from the specified namespace."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Version Service",
+      "item": [
+        {
+          "name": "GetVersion",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/version.v1.VersionService/GetVersion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "version.v1.VersionService",
+                "GetVersion"
+              ]
+            },
+            "description": "Get the version information of the DSP platform.\n\nReturns version details including build number, commit hash, and release information."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health Check Service",
+      "item": [
+        {
+          "name": "Check",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"service\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/grpc.health.v1.Health/Check",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "grpc.health.v1.Health",
+                "Check"
+              ]
+            },
+            "description": "Check health status of the service.\n\nReturns the current health status. Empty service name checks overall server health."
+          },
+          "response": []
+        },
+        {
+          "name": "List",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/grpc.health.v1.Health/List",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "grpc.health.v1.Health",
+                "List"
+              ]
+            },
+            "description": "List all services available for health checking.\n\nReturns a list of all service names that can be checked for health status."
+          },
+          "response": []
+        },
+        {
+          "name": "Watch",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"service\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/grpc.health.v1.Health/Watch",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "grpc.health.v1.Health",
+                "Watch"
+              ]
+            },
+            "description": "Watch health status of a service (streaming).\n\nNOTE: This is a streaming endpoint and may not work well via HTTP/gRPC-gateway.\nReturns continuous health status updates."
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }
