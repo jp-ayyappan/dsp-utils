@@ -3,12 +3,12 @@
 # Test HTTP support for DSP gRPC services
 # Usage: ./test_http_support.sh <base_url> <bearer_token>
 
-BASE_URL="${1:-https://ohalo.platform.partner.dsp-prod-green.virtru.com:443}"
+BASE_URL="${1:-https://platform.acme.com:443}"
 TOKEN="${2}"
 
 if [ -z "$TOKEN" ]; then
   echo "Usage: $0 <base_url> <bearer_token>"
-  echo "Example: $0 https://ohalo.platform.partner.dsp-prod-green.virtru.com:443 eyJhbGc..."
+  echo "Example: $0 https://platform.acme.com:443 eyJhbGc..."
   exit 1
 fi
 

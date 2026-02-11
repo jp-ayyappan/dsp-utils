@@ -13,19 +13,19 @@
     },
     {
       "key": "keycloak_url",
-      "value": "https://keycloak-ohalo.dsp-prod-green.virtru.com",
+      "value": "https://keycloak.acme.com",
       "type": "string",
       "description": "Keycloak base URL"
     },
     {
       "key": "keycloak_realm",
-      "value": "dsp-ohalo",
+      "value": "acme-realm",
       "type": "string",
       "description": "Keycloak realm name"
     },
     {
       "key": "keycloak_client_id",
-      "value": "dsp-outlook-auth",
+      "value": "public-client",
       "type": "string",
       "description": "OAuth client ID"
     },

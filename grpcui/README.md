@@ -56,12 +56,12 @@ scoop install grpcui
 
 **Bash:**
 ```bash
-./runGRPCUI.sh local-dsp.virtru.com --insecure -a 8443 -p 8080
+./runGRPCUI.sh platform.acme.com --insecure -a 8443 -p 8080
 ```
 
 **PowerShell:**
 ```powershell
-.\runGRPCUI.ps1 -PlatformUrl "local-dsp.virtru.com" -Insecure -AuthPort 8443 -GrpcPort 8080
+.\runGRPCUI.ps1 -PlatformUrl "platform.acme.com" -Insecure -AuthPort 8443 -GrpcPort 8080
 ```
 
 ### Production Environment
@@ -90,7 +90,7 @@ Options:
   -a, --auth-port PORT     Auth service port (default: 443)
   --auth-path PATH         Auth endpoint path (auto-detected: /realms or /auth/realms)
   -r, --realm REALM        Auth realm (default: opentdf)
-  -c, --client-id ID       OAuth client ID (default: dsp-outlook-auth)
+  -c, --client-id ID       OAuth client ID (default: public-client)
   -u, --username USER      Username (will prompt if not provided)
   -i, --insecure          Allow insecure SSL connections
   -t, --timeout SEC        Request timeout in seconds (default: 10)
@@ -112,7 +112,7 @@ Parameters:
   -AuthPort                Auth service port (default: 443)
   -AuthPath                Auth endpoint path (auto-detected)
   -Realm                   Auth realm (default: opentdf)
-  -ClientId                OAuth client ID (default: dsp-outlook-auth)
+  -ClientId                OAuth client ID (default: public-client)
   -Username                Username (will prompt if not provided)
   -Insecure               Allow insecure SSL connections
   -Timeout                 Request timeout in seconds (default: 10)
@@ -126,21 +126,21 @@ Parameters:
 
 **Bash:**
 ```bash
-./runGRPCUI.sh local-dsp.virtru.com \
+./runGRPCUI.sh platform.acme.com \
   --insecure \
   -a 8443 \
   -p 8080 \
-  -u jp-ayyappan
+  -u your-username
 ```
 
 **PowerShell:**
 ```powershell
 .\runGRPCUI.ps1 `
-  -PlatformUrl "local-dsp.virtru.com" `
+  -PlatformUrl "platform.acme.com" `
   -Insecure `
   -AuthPort 8443 `
   -GrpcPort 8080 `
-  -Username "jp-ayyappan"
+  -Username "your-username"
 ```
 
 ### 2. Separate Auth and gRPC Servers
@@ -166,8 +166,8 @@ Parameters:
 
 **Bash:**
 ```bash
-./runGRPCUI.sh local-dsp.virtru.com \
-  --token-url "https://local-dsp.virtru.com:8443/auth/realms/opentdf/protocol/openid-connect/token" \
+./runGRPCUI.sh platform.acme.com \
+  --token-url "https://platform.acme.com:8443/auth/realms/opentdf/protocol/openid-connect/token" \
   -p 8080 \
   --insecure
 ```
@@ -175,8 +175,8 @@ Parameters:
 **PowerShell:**
 ```powershell
 .\runGRPCUI.ps1 `
-  -PlatformUrl "local-dsp.virtru.com" `
-  -TokenUrl "https://local-dsp.virtru.com:8443/auth/realms/opentdf/protocol/openid-connect/token" `
+  -PlatformUrl "platform.acme.com" `
+  -TokenUrl "https://platform.acme.com:8443/auth/realms/opentdf/protocol/openid-connect/token" `
   -GrpcPort 8080 `
   -Insecure
 ```
@@ -185,12 +185,12 @@ Parameters:
 
 **Bash:**
 ```bash
-./runGRPCUI.sh local-dsp.virtru.com --debug --insecure
+./runGRPCUI.sh platform.acme.com --debug --insecure
 ```
 
 **PowerShell:**
 ```powershell
-.\runGRPCUI.ps1 -PlatformUrl "local-dsp.virtru.com" -Debug -Insecure
+.\runGRPCUI.ps1 -PlatformUrl "platform.acme.com" -Debug -Insecure
 ```
 
 ## Keycloak Version Auto-Detection
@@ -254,12 +254,12 @@ Use **debug mode** to see detailed connection information:
 
 **Bash:**
 ```bash
-./runGRPCUI.sh local-dsp.virtru.com --debug --insecure
+./runGRPCUI.sh platform.acme.com --debug --insecure
 ```
 
 **PowerShell:**
 ```powershell
-.\runGRPCUI.ps1 -PlatformUrl "local-dsp.virtru.com" -Debug -Insecure
+.\runGRPCUI.ps1 -PlatformUrl "platform.acme.com" -Debug -Insecure
 ```
 
 ## Configuration Defaults
@@ -270,7 +270,7 @@ Use **debug mode** to see detailed connection information:
 | Auth Port | 443 | Port where auth server runs |
 | Auth Path | `/realms` or `/auth/realms` | Auto-detected based on URL |
 | Realm | `opentdf` | OAuth realm name |
-| Client ID | `dsp-outlook-auth` | OAuth client identifier |
+| Client ID | `public-client` | OAuth client identifier |
 | Timeout | 10 seconds | Request timeout |
 
 ## Environment-Specific Examples
@@ -279,24 +279,24 @@ Use **debug mode** to see detailed connection information:
 
 **Bash:**
 ```bash
-./runGRPCUI.sh api-green.dsp.virtru.com \
-  --auth-url keycloak-ohalo.dsp-prod-green.virtru.com \
-  -r dsp-ohalo
+./runGRPCUI.sh platform.acme.com \
+  --auth-url keycloak.acme.com \
+  -r acme-realm
 ```
 
 **PowerShell:**
 ```powershell
 .\runGRPCUI.ps1 `
-  -PlatformUrl "api-green.dsp.virtru.com" `
-  -AuthUrl "keycloak-ohalo.dsp-prod-green.virtru.com" `
-  -Realm "dsp-ohalo"
+  -PlatformUrl "platform.acme.com" `
+  -AuthUrl "keycloak.acme.com" `
+  -Realm "acme-realm"
 ```
 
 ### Local Development
 
 **Bash:**
 ```bash
-./runGRPCUI.sh local-dsp.virtru.com \
+./runGRPCUI.sh platform.acme.com \
   --insecure \
   -a 8443 \
   -p 8080
@@ -305,7 +305,7 @@ Use **debug mode** to see detailed connection information:
 **PowerShell:**
 ```powershell
 .\runGRPCUI.ps1 `
-  -PlatformUrl "local-dsp.virtru.com" `
+  -PlatformUrl "platform.acme.com" `
   -Insecure `
   -AuthPort 8443 `
   -GrpcPort 8080

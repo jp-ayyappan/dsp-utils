@@ -27,7 +27,7 @@
 #
 # QUICK START:
 #   # For local development with self-signed certs
-#   .\runGRPCUI.ps1 -PlatformUrl "local-dsp.virtru.com" -Insecure -AuthPort 8443 -GrpcPort 8080
+#   .\runGRPCUI.ps1 -PlatformUrl "platform.acme.com" -Insecure -AuthPort 8443 -GrpcPort 8080
 #
 #   # For production with separate auth server
 #   .\runGRPCUI.ps1 -PlatformUrl "api.example.com" -AuthUrl "auth.example.com"
@@ -50,7 +50,7 @@
 
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory=$true, Position=0, HelpMessage="Base URL of the platform (e.g., local-dsp.virtru.com)")]
+    [Parameter(Mandatory=$true, Position=0, HelpMessage="Base URL of the platform (e.g., platform.acme.com)")]
     [string]$PlatformUrl,
 
     [Parameter(HelpMessage="gRPC service port (default: 443)")]

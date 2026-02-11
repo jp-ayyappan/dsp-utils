@@ -34,7 +34,7 @@
 #
 # QUICK START:
 #   # For local development with self-signed certs
-#   ./runGRPCUI.sh local-dsp.virtru.com --insecure -a 8443 -p 8080
+#   ./runGRPCUI.sh platform.acme.com --insecure -a 8443 -p 8080
 #
 #   # For production with separate auth server
 #   ./runGRPCUI.sh api.example.com --auth-url auth.example.com
@@ -93,7 +93,7 @@ Usage: $(basename "$0") <platform_url> [options]
 Launch grpcui with OAuth authentication for gRPC services.
 
 Arguments:
-    platform_url          Base URL of the platform (e.g., local-dsp.virtru.com)
+    platform_url          Base URL of the platform (e.g., platform.acme.com)
 
 Options:
     -p, --port PORT       gRPC service port (default: 443)
@@ -113,24 +113,24 @@ Options:
 
 Examples:
     # Basic usage - auto-detects Keycloak version for local URLs
-    $(basename "$0") local-dsp.virtru.com --insecure -a 8443 -p 8080
+    $(basename "$0") platform.acme.com --insecure -a 8443 -p 8080
 
     # Production with separate auth server
     $(basename "$0") api.example.com --auth-url keycloak.example.com -r my-realm
 
     # Full token URL (most explicit)
-    $(basename "$0") local-dsp.virtru.com \
-      --token-url https://local-dsp.virtru.com:8443/auth/realms/opentdf/protocol/openid-connect/token \
+    $(basename "$0") platform.acme.com \
+      --token-url https://platform.acme.com:8443/auth/realms/opentdf/protocol/openid-connect/token \
       -p 8080 --insecure
 
     # Override auto-detection with explicit auth path
     $(basename "$0") prod.example.com --auth-path /auth/realms
 
     # Specify username to avoid prompt
-    $(basename "$0") local-dsp.virtru.com -u jp-ayyappan --insecure
+    $(basename "$0") platform.acme.com -u your-username --insecure
 
     # Debug mode to see what's happening
-    $(basename "$0") local-dsp.virtru.com --debug --insecure
+    $(basename "$0") platform.acme.com --debug --insecure
 
 EOF
 }

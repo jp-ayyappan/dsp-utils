@@ -18,13 +18,13 @@ Comprehensive Postman collection for interacting with Virtru Data Security Platf
 3. Select "Link" tab
 4. Paste this URL:
    ```
-   https://raw.githubusercontent.com/jp-ayyappan/dsp-utils/main/postman/DSP-gRPC-APIs.postman_collection.json
+   https://raw.githubusercontent.com/your-username/dsp-utils/main/postman/DSP-gRPC-APIs.postman_collection.json
    ```
 5. Click "Continue" → "Import"
 
 **Option C: Clone the repository**
 ```bash
-git clone https://github.com/jp-ayyappan/dsp-utils.git
+git clone https://github.com/your-username/dsp-utils.git
 cd dsp-utils/postman
 # Then use Option A to import the local file
 ```
@@ -35,10 +35,10 @@ Click on the collection → **Variables** tab and set these values:
 
 | Variable | Description | Example | Required |
 |----------|-------------|---------|----------|
-| `base_url` | gRPC server address (**include protocol**) | `https://ohalo.platform.partner.dsp-prod-green.virtru.com:443` | ✅ Yes |
-| `keycloak_url` | Keycloak base URL | `https://keycloak-ohalo.dsp-prod-green.virtru.com` | ✅ Yes |
-| `keycloak_realm` | Keycloak realm name | `dsp-ohalo` | ✅ Yes |
-| `keycloak_client_id` | OAuth public client ID | `dsp-outlook-auth` | ✅ Yes |
+| `base_url` | gRPC server address (**include protocol**) | `https://platform.acme.com:443` | ✅ Yes |
+| `keycloak_url` | Keycloak base URL | `https://keycloak.acme.com` | ✅ Yes |
+| `keycloak_realm` | Keycloak realm name | `acme-realm` | ✅ Yes |
+| `keycloak_client_id` | OAuth public client ID | `public-client` | ✅ Yes |
 | `keycloak_username` | Your username | `your-username` | ✅ Yes |
 | `keycloak_password` | Your password | `your-password` | ✅ Yes |
 | `auth_token` | Access token (auto-populated) | *Auto-set by "Get Access Token"* | ⚙️ Auto |
@@ -157,8 +157,8 @@ Try **Policy Service → Namespaces → List Namespaces** to verify everything w
 
 **Solutions:**
 - **Most common:** Missing protocol in `base_url`
-  - ❌ Wrong: `ohalo.platform.partner.dsp-prod-green.virtru.com:443`
-  - ✅ Correct: `https://ohalo.platform.partner.dsp-prod-green.virtru.com:443`
+  - ❌ Wrong: `platform.acme.com:443`
+  - ✅ Correct: `https://platform.acme.com:443`
 - Verify you have a valid `auth_token` (run "Get Access Token" first)
 - Check if gRPC-gateway is enabled on your DSP instance
 

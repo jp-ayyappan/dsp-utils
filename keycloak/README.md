@@ -19,8 +19,8 @@ pip install -r requirements.txt
 
 3. Create a `.env` file with your Keycloak credentials:
 ```bash
-KEYCLOAK_URL=https://keycloak-ohalo.dsp-prod-green.virtru.com
-KEYCLOAK_REALM=dsp-ohalo
+KEYCLOAK_URL=https://keycloak.acme.com
+KEYCLOAK_REALM=acme-realm
 KEYCLOAK_USERNAME=your-username
 KEYCLOAK_PASSWORD=your-password
 ```
@@ -72,7 +72,7 @@ python keycloak_admin.py show client <client-id>
 python keycloak_admin.py find clients
 
 # Find clients with specific audience
-python keycloak_admin.py find clients --audience "https://ohalo.platform.partner.dsp-prod-green.virtru.com"
+python keycloak_admin.py find clients --audience "https://platform.acme.com"
 
 # Find and replace redirect URIs (dry run)
 python keycloak_admin.py find redirect-uris \
@@ -93,14 +93,14 @@ python keycloak_admin.py find redirect-uris \
 # Update audience for specific clients (comma-separated)
 python keycloak_admin.py update audience \
   --client-ids client1,client2,client3 \
-  --audience "https://ohalo.platform.partner.dsp-prod-green.virtru.com"
+  --audience "https://platform.acme.com"
 ```
 
 **Update Redirect URIs:**
 ```bash
 # Replace redirect URIs (default mode)
 python keycloak_admin.py update redirect-uris \
-  --client-ids "dsp-web-admin,dsp-secure-viewer-web" \
+  --client-ids "admin-client,viewer-client" \
   --uris "https://new.example.com/*,https://new.example.com:8080/*" \
   --mode replace
 
@@ -233,6 +233,6 @@ python keycloak_admin.py interactive
 
 ## Keycloak Instance
 
-- **URL:** https://keycloak-ohalo.dsp-prod-green.virtru.com/admin/dsp-ohalo/console/
-- **Realm:** dsp-ohalo
+- **URL:** https://keycloak.acme.com/admin/acme-realm/console/
+- **Realm:** acme-realm
 - **Access Level:** realm-admin
