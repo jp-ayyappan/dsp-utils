@@ -191,45 +191,52 @@ Try **Policy Service → Namespaces → List Namespaces** to verify everything w
 
 ## Services Included
 
-The collection includes all OpenTDF Platform and DSP-specific gRPC services:
+**Total: 64 endpoints across 8 services**
 
-### OpenTDF Platform Services
+### 1. Authentication (3 endpoints)
+- Get Access Token (Password Grant, Client Credentials)
+- Refresh Token
 
-**Policy Service**
-- **Namespaces:** Create, list, get, update, deactivate namespaces
-- **Attributes:** Full CRUD for attributes and values with HIERARCHY/ALL_OF/ANY_OF rules
-- **Subject Mappings:** Map users/groups to attributes with condition sets
-- **Resource Mappings:** Auto-classification via keyword/regex patterns
-- **KAS Registry:** Manage Key Access Servers and cryptographic keys
+### 2. Policy Service (47 endpoints)
 
-**KAS Service**
-- **Rewrap:** Rewrap encrypted keys for authorized access
-- **PublicKey:** Get KAS public keys for encryption
+**Namespaces (5):** Create, List, Get, Update, Deactivate
 
-**Authorization Service**
-- **Get Decisions:** Evaluate access control decisions
-- **Get Entitlements:** Query user entitlements
+**Attributes (6):** Create, List, Get, Update, Deactivate, GetAttributeValuesByFqns
 
-**WellKnown Service**
-- **Configuration:** Service discovery and platform metadata
+**Attribute Values (8):** Create (with examples for Secret/TopSecret/Confidential), List, Get, Update, Deactivate
 
-### DSP-Specific Services
+**Subject Mappings (7):** Match, Create (with/without new subjects), List, Get, Update, Delete
 
-**Tagging PDP Service (v2)**
-- Content analysis and tag generation
-- Data attribute extraction
-- STANAG 4774 assertion generation
-- Encrypted search token generation
+**Resource Mappings (10):** CreateGroup, ListGroups, GetGroup, UpdateGroup, DeleteGroup, Create, List, Get, Update, Delete
 
-**Policy Artifact Service (v1)**
-- Policy import/export (YAML, OCI bundles)
-- Signature verification
-- Trusted provider management
+**Subject Condition Sets (5):** Create, List, Get, Update, Delete
 
-**NanoTDF Rewrap Service (v1)**
-- NanoTDF key rewrapping
-- X25519 key agreement
-- Batch operations
+**Key Access Servers (6):** Create (remote/local key), List, Get, Update, Delete
+
+### 3. KAS Service (3 endpoints)
+- Rewrap
+- PublicKey (POST)
+- LegacyPublicKey
+
+### 4. WellKnown Service (1 endpoint)
+- GetWellKnownConfiguration
+
+### 5. Authorization Service (4 endpoints)
+- GetDecisions (single/multiple actions)
+- GetDecisionsByToken
+- GetEntitlements
+
+### 6. Tagging PDP Service (3 endpoints)
+- Tag Content Items
+- Tag Per Content Item
+- Process Tags
+
+### 7. Policy Artifact Service (2 endpoints)
+- Import Policy (Unbundled)
+- Export Policy (Unbundled)
+
+### 8. NanoTDF Rewrap Service (1 endpoint)
+- Rewrap NanoTDF Headers
 
 ## Proto Files
 
