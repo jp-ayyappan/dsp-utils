@@ -69,9 +69,11 @@ The collection uses these variables:
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `base_url` | gRPC server address | `localhost:8080` or `api.example.com:443` |
+| `base_url` | gRPC server address (**include protocol**) | `http://localhost:8080` or `https://ohalo.platform.partner.dsp-prod-green.virtru.com:443` |
 | `auth_token` | Bearer token for authentication | Your OAuth token |
 | `use_tls` | Whether to use TLS | `true` for production, `false` for local |
+
+**⚠️ Important:** The `base_url` must include the protocol (`http://` or `https://`). Without it, Postman will default to `http://` which will cause connection errors on TLS endpoints.
 
 **Set Variables:**
 1. Click on the collection
@@ -267,6 +269,17 @@ cd ~/dev/personal/dsp-utils/grpcui
 ```
 
 ## Troubleshooting
+
+### Socket Hang Up
+
+**Problem:** `Error: socket hang up`
+
+**Solutions:**
+- **Most common:** Missing protocol in `base_url` - add `https://` or `http://` prefix
+  - ❌ Wrong: `ohalo.platform.partner.dsp-prod-green.virtru.com:443`
+  - ✅ Correct: `https://ohalo.platform.partner.dsp-prod-green.virtru.com:443`
+- Verify you have a valid `auth_token` (run "Get Access Token" first)
+- Check if gRPC-gateway is enabled on your DSP instance
 
 ### Connection Refused
 
