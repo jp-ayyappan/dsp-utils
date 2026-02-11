@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Virtru DSP gRPC APIs",
-    "description": "Comprehensive collection for interacting with Virtru Data Security Platform gRPC endpoints.\n\n**Services Included:**\n- Authentication (Keycloak OAuth)\n- Policy Service (Namespaces, Attributes, Values, Subject Mappings, Resource Mappings, Subject Condition Sets, Key Access Servers)\n- KAS Service (Rewrap, PublicKey)\n- Wellknown Service (Configuration)\n- Authorization Service (Decisions, Entitlements)\n- Shared Service (Entitlements, Transformations)\n- Tagging PDP Service (v2)\n- Policy Artifact Service (v1)\n- NanoTDF Rewrap Service (v1)\n\n**Authentication:**\n1. Configure Keycloak variables in the Variables tab\n2. Run 'Get Access Token' request to authenticate\n3. Token is automatically saved and used for all subsequent requests\n4. Token auto-refresh on expiry",
+    "description": "Comprehensive collection for interacting with Virtru Data Security Platform gRPC endpoints.\n\n**Services Included:**\n- Authentication (Keycloak OAuth)\n- Policy Service (Namespaces, Attributes, Values, Subject Mappings, Resource Mappings, Subject Condition Sets, Key Access Servers)\n- KAS Service (Rewrap, PublicKey)\n- Wellknown Service (Configuration)\n- Authorization Service (Decisions, DecisionsByToken, Entitlements)\n- Tagging PDP Service (v2)\n- Policy Artifact Service (v1)\n- NanoTDF Rewrap Service (v1)\n\n**Authentication:**\n1. Configure Keycloak variables in the Variables tab\n2. Run 'Get Access Token' request to authenticate\n3. Token is automatically saved and used for all subsequent requests\n4. Token auto-refresh on expiry",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -866,6 +866,29 @@
           "name": "Subject Mappings",
           "item": [
             {
+              "name": "MatchSubjectMappings",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"subject_properties\": [\n    {\n      \"external_selector_value\": \".emailAddress\",\n      \"external_value\": \"user@example.com\"\n    },\n    {\n      \"external_selector_value\": \".role\",\n      \"external_value\": \"administrator\"\n    }\n  ],\n  \"actions\": [\n    {\n      \"standard\": \"STANDARD_ACTION_DECRYPT\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.subjectmapping.SubjectMappingService/MatchSubjectMappings",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.subjectmapping.SubjectMappingService", "MatchSubjectMappings"]
+                },
+                "description": "Match subject properties against subject mappings to find applicable attribute values.\n\n**Input:**\n- Subject properties (email, role, group, etc.)\n- Actions being requested\n\n**Returns:**\n- Attribute values the subject can access\n- Matching subject mappings\n\n**Use Cases:**\n- Determine what data a user can access\n- Real-time entitlement resolution\n- Policy evaluation"
+              },
+              "response": []
+            },
+            {
               "name": "CreateSubjectMapping",
               "request": {
                 "method": "POST",
@@ -1009,6 +1032,121 @@
         {
           "name": "Resource Mappings",
           "item": [
+            {
+              "name": "CreateResourceMappingGroup",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"namespace_id\": \"{{namespace_id}}\",\n  \"name\": \"security-keywords\",\n  \"metadata\": {\n    \"labels\": {\n      \"category\": \"auto-classification\",\n      \"type\": \"security\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/CreateResourceMappingGroup",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.resourcemapping.ResourceMappingService", "CreateResourceMappingGroup"]
+                },
+                "description": "Create a resource mapping group to organize related resource mappings.\n\n**Groups organize mappings by:**\n- Namespace\n- Category (e.g., security, compliance, data type)\n- Purpose (e.g., auto-classification, DLP)\n\n**Use Cases:**\n- Organize keyword lists\n- Group related classification rules\n- Manage mapping sets by purpose"
+              },
+              "response": []
+            },
+            {
+              "name": "ListResourceMappingGroups",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"namespace_id\": \"{{namespace_id}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/ListResourceMappingGroups",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.resourcemapping.ResourceMappingService", "ListResourceMappingGroups"]
+                },
+                "description": "List all resource mapping groups, optionally filtered by namespace."
+              },
+              "response": []
+            },
+            {
+              "name": "GetResourceMappingGroup",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<resource-mapping-group-id>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/GetResourceMappingGroup",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.resourcemapping.ResourceMappingService", "GetResourceMappingGroup"]
+                },
+                "description": "Get details of a specific resource mapping group."
+              },
+              "response": []
+            },
+            {
+              "name": "UpdateResourceMappingGroup",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<resource-mapping-group-id>\",\n  \"metadata\": {\n    \"labels\": {\n      \"updated\": \"true\"\n    }\n  },\n  \"metadata_update_behavior\": \"EXTEND\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/UpdateResourceMappingGroup",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.resourcemapping.ResourceMappingService", "UpdateResourceMappingGroup"]
+                },
+                "description": "Update resource mapping group metadata."
+              },
+              "response": []
+            },
+            {
+              "name": "DeleteResourceMappingGroup",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"<resource-mapping-group-id>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/policy.resourcemapping.ResourceMappingService/DeleteResourceMappingGroup",
+                  "host": ["{{base_url}}"],
+                  "path": ["policy.resourcemapping.ResourceMappingService", "DeleteResourceMappingGroup"]
+                },
+                "description": "Delete a resource mapping group.\n\n**Warning:** This will fail if the group contains any resource mappings."
+              },
+              "response": []
+            },
             {
               "name": "CreateResourceMapping",
               "request": {
@@ -1445,26 +1583,6 @@
           "response": []
         },
         {
-          "name": "PublicKey (GET - Deprecated)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/kas/v2/kas_public_key?algorithm=rsa:2048",
-              "host": ["{{base_url}}"],
-              "path": ["kas", "v2", "kas_public_key"],
-              "query": [
-                {
-                  "key": "algorithm",
-                  "value": "rsa:2048"
-                }
-              ]
-            },
-            "description": "Deprecated: Use POST /kas/v2/kas_public_key instead.\n\nRetrieve KAS public key via GET request."
-          },
-          "response": []
-        },
-        {
           "name": "LegacyPublicKey",
           "request": {
             "method": "POST",
@@ -1479,11 +1597,11 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/kas/kas_public_key",
+              "raw": "{{base_url}}/kas.AccessService/LegacyPublicKey",
               "host": ["{{base_url}}"],
-              "path": ["kas", "kas_public_key"]
+              "path": ["kas.AccessService", "LegacyPublicKey"]
             },
-            "description": "Legacy endpoint for retrieving KAS public key.\n\n**Deprecated:** Use /kas/v2/kas_public_key (POST) for new implementations."
+            "description": "Legacy endpoint for retrieving KAS public key.\n\n**Deprecated:** Use PublicKey (POST) for new implementations."
           },
           "response": []
         }
@@ -1496,12 +1614,21 @@
         {
           "name": "GetWellKnownConfiguration",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
-              "raw": "{{base_url}}/.well-known/configuration",
+              "raw": "{{base_url}}/wellknownconfiguration.WellKnownService/GetWellKnownConfiguration",
               "host": ["{{base_url}}"],
-              "path": [".well-known", "configuration"]
+              "path": ["wellknownconfiguration.WellKnownService", "GetWellKnownConfiguration"]
             },
             "description": "Retrieve platform configuration and service discovery information.\n\n**Returns:**\n- Available services and endpoints\n- Platform version information\n- Feature flags and capabilities\n- OAuth/OIDC configuration\n- Public keys and certificates\n\n**Use Cases:**\n- Service discovery\n- Client auto-configuration\n- Version compatibility checking"
           },
@@ -1560,6 +1687,29 @@
           "response": []
         },
         {
+          "name": "GetDecisionsByToken",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision_requests\": [\n    {\n      \"actions\": [\n        {\n          \"standard\": \"STANDARD_ACTION_DECRYPT\"\n        }\n      ],\n      \"resource_attributes\": [\n        {\n          \"attribute_value_fqns\": [\n            \"https://example.com/attr/classification/attr/SecurityLevel/value/Secret\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/authorization.AuthorizationService/GetDecisionsByToken",
+              "host": ["{{base_url}}"],
+              "path": ["authorization.AuthorizationService", "GetDecisionsByToken"]
+            },
+            "description": "Request authorization decisions using the authenticated user's token.\n\n**Simpler than GetDecisions:**\n- Entity information extracted from auth token\n- No need to specify entity_chain\n- Uses bearer token for authentication\n\n**Decision Request:**\n- **actions**: What action is being requested\n- **resource_attributes**: Attributes of the resource being accessed\n\n**Response:**\n- PERMIT: Action is allowed\n- DENY: Action is denied\n- INDETERMINATE: Unable to make decision"
+          },
+          "response": []
+        },
+        {
           "name": "GetEntitlements",
           "request": {
             "method": "POST",
@@ -1584,104 +1734,6 @@
         }
       ],
       "description": "Authorization Service - Real-time authorization decisions and entitlement queries"
-    },
-    {
-      "name": "Shared Service",
-      "item": [
-        {
-          "name": "GetMyEntitlements (v1)",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/shared.v1.SharedService/GetMyEntitlements",
-              "host": ["{{base_url}}"],
-              "path": ["shared.v1.SharedService", "GetMyEntitlements"]
-            },
-            "description": "Get entitlements for the current authenticated user (v1).\n\n**Returns:**\nAll attribute values and actions the current user is entitled to access based on their authentication token.\n\n**Use Cases:**\n- Display user's access level\n- Client-side permission checks\n- UI personalization based on access"
-          },
-          "response": []
-        },
-        {
-          "name": "GetMyEntitlements (v2)",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/shared.v2.SharedService/GetMyEntitlements",
-              "host": ["{{base_url}}"],
-              "path": ["shared.v2.SharedService", "GetMyEntitlements"]
-            },
-            "description": "Get entitlements for the current authenticated user (v2).\n\n**Improvements over v1:**\n- Enhanced entitlement details\n- Better performance\n- Additional metadata"
-          },
-          "response": []
-        },
-        {
-          "name": "TransformToICTDF",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"ztdf\": \"<base64-encoded-ztdf>\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/shared.SharedService/TransformToICTDF",
-              "host": ["{{base_url}}"],
-              "path": ["shared.SharedService", "TransformToICTDF"]
-            },
-            "description": "Transform ZTDF format to ICTDF format.\n\n**ZTDF:** Zero Trust TDF format\n**ICTDF:** Interoperable Cryptographic TDF format\n\nThis transformation enables compatibility between different TDF implementations and versions."
-          },
-          "response": []
-        },
-        {
-          "name": "TransformToZTDF",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"ictdf\": \"<base64-encoded-ictdf>\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/shared.SharedService/TransformToZTDF",
-              "host": ["{{base_url}}"],
-              "path": ["shared.SharedService", "TransformToZTDF"]
-            },
-            "description": "Transform ICTDF format to ZTDF format.\n\n**ICTDF:** Interoperable Cryptographic TDF format\n**ZTDF:** Zero Trust TDF format\n\nThis transformation enables modern zero-trust capabilities and enhanced security features."
-          },
-          "response": []
-        }
-      ],
-      "description": "Shared Service - User entitlements and TDF format transformations"
     },
     {
       "name": "Tagging PDP Service",
