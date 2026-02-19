@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "Virtru DSP gRPC APIs",
+    "name": "Virtru Data Security Platform gRPC APIs",
     "description": "Comprehensive collection for interacting with Virtru Data Security Platform gRPC endpoints.\n\n**Services Included:**\n- Authentication (Keycloak OAuth)\n- Policy Service (Namespaces, Attributes, Values, Subject Mappings, Resource Mappings, Subject Condition Sets, Key Access Servers)\n- KAS Service (Rewrap, PublicKey)\n- Wellknown Service (Configuration)\n- Authorization Service (Decisions, DecisionsByToken, Entitlements)\n- Entity Resolution Service (CreateEntityChainFromJwt, ResolveEntities)\n- Shared Service (GetMyEntitlements, TransformToICTDF, TransformToZTDF)\n- Tagging PDP Service (v2)\n- Policy Artifact Service (v1)\n- NanoTDF Rewrap Service (v1)\n\n- Policy Actions Service\n- Policy Registered Resources Service\n- Policy Key Management Service\n- Policy Obligations Service\n- Authorization Service v2\n- Entity Resolution Service v2\n- Config Service (KAS, Outlook, Secure Viewer, Tagging PDP)\n- Web Admin Config Service\n- Certificate Service\n- Version Service\n- Health Check Service\n\n**Authentication:**\n1. Configure Keycloak variables in the Variables tab\n2. Run 'Get Access Token' request to authenticate\n3. Token is automatically saved and used for all subsequent requests\n4. Token auto-refresh on expiry",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -4676,7 +4676,7 @@
                 "GetVersion"
               ]
             },
-            "description": "Get the version information of the DSP platform.\n\nReturns version details including build number, commit hash, and release information."
+            "description": "Get the version information of the Data Security Platform.\n\nReturns version details including build number, commit hash, and release information."
           },
           "response": []
         }

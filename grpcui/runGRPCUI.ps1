@@ -71,8 +71,8 @@ param(
     [Parameter(HelpMessage="Auth realm (default: opentdf)")]
     [string]$Realm = "opentdf",
 
-    [Parameter(HelpMessage="OAuth client ID (default: dsp-outlook-auth)")]
-    [string]$ClientId = "dsp-outlook-auth",
+    [Parameter(HelpMessage="OAuth client ID (default: public-client)")]
+    [string]$ClientId = "public-client",
 
     [Parameter(HelpMessage="Username (will prompt if not provided)")]
     [string]$Username,

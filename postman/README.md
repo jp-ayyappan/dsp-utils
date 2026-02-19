@@ -1,4 +1,4 @@
-# Virtru DSP gRPC API Postman Collection
+# Virtru Data Security Platform gRPC API Postman Collection
 
 Comprehensive Postman collection for interacting with Virtru Data Security Platform gRPC endpoints via gRPC-gateway.
 
@@ -9,7 +9,7 @@ Comprehensive Postman collection for interacting with Virtru Data Security Platf
 **Option A: Import via Postman UI**
 1. Open Postman
 2. Click "Import" button
-3. Select `DSP-gRPC-APIs.postman_collection.json`
+3. Select `virtru-data-security-platform-grpc-apis.postman_collection.json`
 4. Click "Import"
 
 **Option B: Import directly from GitHub**
@@ -18,14 +18,14 @@ Comprehensive Postman collection for interacting with Virtru Data Security Platf
 3. Select "Link" tab
 4. Paste this URL:
    ```
-   https://raw.githubusercontent.com/your-username/dsp-utils/main/postman/DSP-gRPC-APIs.postman_collection.json
+   https://raw.githubusercontent.com/your-username/your-repo/main/postman/virtru-data-security-platform-grpc-apis.postman_collection.json
    ```
 5. Click "Continue" → "Import"
 
 **Option C: Clone the repository**
 ```bash
-git clone https://github.com/your-username/dsp-utils.git
-cd dsp-utils/postman
+git clone https://github.com/your-username/your-repo.git
+cd your-repo/postman
 # Then use Option A to import the local file
 ```
 
@@ -160,7 +160,7 @@ Try **Policy Service → Namespaces → List Namespaces** to verify everything w
   - ❌ Wrong: `platform.acme.com:443`
   - ✅ Correct: `https://platform.acme.com:443`
 - Verify you have a valid `auth_token` (run "Get Access Token" first)
-- Check if gRPC-gateway is enabled on your DSP instance
+- Check if gRPC-gateway is enabled on your Data Security Platform instance
 
 ### Connection Refused
 
@@ -305,7 +305,7 @@ opentdf/platform/service/
 └── wellknownconfiguration/wellknown_configuration.proto
 ```
 
-**DSP Services:**
+**Data Security Platform Services:**
 ```
 data-security-platform/sdk/
 ├── tagging/pdp/v2/tagging.proto
@@ -317,7 +317,7 @@ data-security-platform/sdk/
 
 ### Related Tools
 
-This repository includes other utilities for DSP infrastructure management:
+This repository includes other utilities for Data Security Platform infrastructure management:
 
 - **[Keycloak Admin Tool](../keycloak/)** - CLI for managing Keycloak clients, users, and attributes
 - **[gRPC UI Scripts](../grpcui/)** - Interactive gRPC UI for service exploration
@@ -349,5 +349,5 @@ To add new endpoints or update existing ones:
 
 - **v1.0** (2026-02-09) - Initial collection
   - OpenTDF Platform services (Policy, KAS, Authorization, WellKnown)
-  - DSP services (Tagging PDP, Policy Artifact, NanoTDF Rewrap)
+  - Data Security Platform services (Tagging PDP, Policy Artifact, NanoTDF Rewrap)
   - Keycloak OAuth with auto-refresh

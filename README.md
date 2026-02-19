@@ -1,8 +1,8 @@
-# DSP Utils
+# Virtru Data Security Platform Utils
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Utility scripts and tools for Data Security Platform (DSP) infrastructure management, including Keycloak administration, gRPC UI tools, and comprehensive Postman API collections.
+Utility scripts and tools for Virtru Data Security Platform infrastructure management, including Keycloak administration, gRPC UI tools, and comprehensive Postman API collections.
 
 ## Contents
 
@@ -17,8 +17,8 @@ Tools for managing Keycloak instances:
 - `requirements.txt` - Python dependencies
 
 ### postman/
-Postman collections for DSP APIs:
-- `DSP-gRPC-APIs.postman_collection.json` - Comprehensive gRPC API collection
+Postman collections for Data Security Platform APIs:
+- `virtru-data-security-platform-grpc-apis.postman_collection.json` - Comprehensive gRPC API collection
 - Includes Tagging PDP, Policy Artifact, and NanoTDF Rewrap services
 
 ## Setup

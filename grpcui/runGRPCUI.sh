@@ -58,7 +58,7 @@ set -euo pipefail
 
 # --- Configuration ---
 DEFAULT_AUTH_REALM='opentdf'
-DEFAULT_CLIENT_ID='dsp-outlook-auth'
+DEFAULT_CLIENT_ID='public-client'
 DEFAULT_AUTH_PATH='/realms'  # Changed from /auth/realms for Keycloak 17+
 DEFAULT_TIMEOUT=10
 

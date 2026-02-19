@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test HTTP support for DSP gRPC services
+# Test HTTP support for Data Security Platform gRPC services
 # Usage: ./test_http_support.sh <base_url> <bearer_token>
 
 BASE_URL="${1:-https://platform.acme.com:443}"
