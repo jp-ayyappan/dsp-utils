@@ -122,7 +122,7 @@ Parameters:
 
 ## Common Scenarios
 
-### 1. DSP Local Development
+### 1. Platform Local Development
 
 **Bash:**
 ```bash
@@ -228,7 +228,7 @@ You can override this with `--auth-path` (bash) or `-AuthPath` (PowerShell).
 **Solutions:**
 - Verify the gRPC port with `-p PORT` (bash) or `-GrpcPort PORT` (PowerShell)
 - Check if the gRPC server is running
-- For local DSP, common gRPC ports are 8080 or 8443
+- For local platform runs, common gRPC ports are 8080 or 8443
 
 ### "Connection timed out"
 
@@ -275,7 +275,7 @@ Use **debug mode** to see detailed connection information:
 
 ## Environment-Specific Examples
 
-### DSP Production (Green)
+### Platform Production (Green)
 
 **Bash:**
 ```bash
