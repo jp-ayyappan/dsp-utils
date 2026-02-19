@@ -351,3 +351,7 @@ To add new endpoints or update existing ones:
   - OpenTDF Platform services (Policy, KAS, Authorization, WellKnown)
   - Data Security Platform services (Tagging PDP, Policy Artifact, NanoTDF Rewrap)
   - Keycloak OAuth with auto-refresh
+
+## Legal & Trademarks
+
+All trademarks and registered trademarks are the property of their respective owners. No affiliation, sponsorship, or endorsement is implied, and no permissions have been sought for trademark use. Scripts and documents in this repository are provided “as is,” without warranties or guarantees of any kind. Upstream services may change; while reasonable efforts may be made to keep interfaces up to date, compatibility is not guaranteed.

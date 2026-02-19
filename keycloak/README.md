@@ -236,3 +236,7 @@ python keycloak_admin.py interactive
 - **URL:** https://keycloak.acme.com/admin/acme-realm/console/
 - **Realm:** acme-realm
 - **Access Level:** realm-admin
+
+## Legal & Trademarks
+
+All trademarks and registered trademarks are the property of their respective owners. No affiliation, sponsorship, or endorsement is implied, and no permissions have been sought for trademark use. Scripts and documents in this repository are provided “as is,” without warranties or guarantees of any kind. Upstream services may change; while reasonable efforts may be made to keep interfaces up to date, compatibility is not guaranteed.

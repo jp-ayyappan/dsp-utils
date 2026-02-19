@@ -31,3 +31,7 @@
 ## Security & Configuration Tips
 - Store Keycloak credentials in `keycloak/.env` (gitignored). Never commit secrets.
 - If providing sample URLs or realms, use placeholders like `example.com` or `acme-realm`.
+
+## Legal & Trademarks
+
+All trademarks and registered trademarks are the property of their respective owners. No affiliation, sponsorship, or endorsement is implied, and no permissions have been sought for trademark use. Scripts and documents in this repository are provided “as is,” without warranties or guarantees of any kind. Upstream services may change; while reasonable efforts may be made to keep interfaces up to date, compatibility is not guaranteed.
